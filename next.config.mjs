@@ -6,6 +6,9 @@ const nextConfig = {
         EMAIL_USER: process.env.EMAIL_USER,
         EMAIL_PASS: process.env.EMAIL_PASS,
     },
+    images: {
+        domains: ['img.daisyui.com'],
+    },
 };
 
 export default nextConfig;

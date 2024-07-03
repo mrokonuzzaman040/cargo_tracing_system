@@ -10,7 +10,7 @@ const Footer = () => {
                     <p>All rights reserved powered by INTERAFRICA EXPRESS.</p>
                 </div>
                 <div className="flex items-center">
-                    <Image src="/logo.png" alt="IAExp Logo" className="h-12 mr-2" />
+                    <Image height={40} width={40} src="/logo.png" alt="IAExp Logo" />
                     {/* <span className="text-lg font-bold">IAExp</span> */}
                 </div>
             </div>

@@ -172,7 +172,7 @@ const Register = () => {
                     </div>
                 </div>
                 <div className="w-full md:w-1/3 flex items-center justify-center">
-                    <Image src="/path-to-your-logo.png" alt="IAExp Logo" className="h-40" />
+                    <Image src="/logo.png" alt="IAExp Logo" width={200} height={40} />
                 </div>
             </div>
         </div>

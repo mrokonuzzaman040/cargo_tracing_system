@@ -34,7 +34,7 @@ const HowToBuy = () => {
                         <li key={index} className="step step-info">
                             <div className="flex flex-col items-center text-center px-2">
                                 <div className="w-20 h-20 mb-4 flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-full shadow">
-                                    <Image src={step.image} alt={step.title} className="w-10 h-10" />
+                                    <Image src={step.image} width={32} height={32} alt={step.title} />
                                 </div>
                                 <h3 className="font-bold mb-2">{step.title}</h3>
                                 <p className="text-sm">{step.description}</p>
