@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+// User schema definition
 const UserSchema = new mongoose.Schema({
   contactName: { type: String, required: true },
   phone: { type: String, required: true },
