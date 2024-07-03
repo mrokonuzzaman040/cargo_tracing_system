@@ -21,7 +21,7 @@ export default NextAuth({
         }
 
         const isValid = await bcrypt.compare(
-          credentials?.password,
+          credentials?.password ?? "",
           user.password
         );
         if (!isValid) {
