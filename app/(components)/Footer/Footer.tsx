@@ -1,5 +1,5 @@
 import React from 'react';
-
+import Image from 'next/image';
 const Footer = () => {
     return (
         <footer className="bg-yellow-500 text-white py-4">
@@ -10,7 +10,7 @@ const Footer = () => {
                     <p>All rights reserved powered by INTERAFRICA EXPRESS.</p>
                 </div>
                 <div className="flex items-center">
-                    <img src="/logo.png" alt="IAExp Logo" className="h-12 mr-2" />
+                    <Image src="/logo.png" alt="IAExp Logo" className="h-12 mr-2" />
                     {/* <span className="text-lg font-bold">IAExp</span> */}
                 </div>
             </div>

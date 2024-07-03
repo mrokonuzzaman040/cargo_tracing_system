@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon, UserIcon, PhoneIcon } from '@heroicons/react/24/outline';
 
@@ -171,7 +172,7 @@ const Register = () => {
                     </div>
                 </div>
                 <div className="w-full md:w-1/3 flex items-center justify-center">
-                    <img src="/path-to-your-logo.png" alt="IAExp Logo" className="h-40" />
+                    <Image src="/path-to-your-logo.png" alt="IAExp Logo" className="h-40" />
                 </div>
             </div>
         </div>

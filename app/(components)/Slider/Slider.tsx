@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
 const Slider = () => {
@@ -14,22 +15,22 @@ const Slider = () => {
             {/* Slider */}
             <div className="carousel w-full">
                 <div id="item1" className="carousel-item w-full">
-                    <img
+                    <Image
                         src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.jpg"
                         className="w-full" alt="Slide 1" />
                 </div>
                 <div id="item2" className="carousel-item w-full">
-                    <img
+                    <Image
                         src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.jpg"
                         className="w-full" alt="Slide 2" />
                 </div>
                 <div id="item3" className="carousel-item w-full">
-                    <img
+                    <Image
                         src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.jpg"
                         className="w-full" alt="Slide 3" />
                 </div>
                 <div id="item4" className="carousel-item w-full">
-                    <img
+                    <Image
                         src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.jpg"
                         className="w-full" alt="Slide 4" />
                 </div>
