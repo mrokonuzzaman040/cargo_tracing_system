@@ -4,7 +4,7 @@ import React from 'react';
 
 const Slider = () => {
     return (
-        <div className="relative w-full">
+        <div className="relative w-full mx-auto max-w-7xl ">
             {/* Slider */}
             <div className="carousel w-full">
                 <div id="item1" className="carousel-item w-full">

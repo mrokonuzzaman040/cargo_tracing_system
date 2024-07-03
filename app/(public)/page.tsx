@@ -4,6 +4,7 @@ import Navbar from '../(components)/Navbar/Navbar';
 import Slider from '../(components)/Slider/Slider';
 import ExpressTrack from '../(components)/ExpressTrack/ExpressTrack';
 import HowToBuy from '../(components)/HowToBuy/HowToBuy';
+import Footer from '../(components)/Footer/Footer';
 
 const page = () => {
     return (
@@ -13,6 +14,7 @@ const page = () => {
             <Slider />
             <ExpressTrack />
             <HowToBuy />
+            <Footer />
         </div>
     );
 };

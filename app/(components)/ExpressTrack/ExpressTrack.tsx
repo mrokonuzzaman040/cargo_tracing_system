@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 const ExpressTrack = () => {
     return (
-        <div className="container mx-auto my-8 p-4 flex flex-wrap">
+        <div className="container mx-auto max-w-7xl  my-8 p-4 flex flex-wrap">
             {/* Express Track Section */}
             <div className="w-full lg:w-1/4 p-4 border-gray-300">
                 <h2 className="text-xl font-bold mb-4">Express Track</h2>
