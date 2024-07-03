@@ -1,10 +1,16 @@
-// app/(components)/Slider/Slider.tsx
-
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
+import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
 const Slider = () => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
-        <div className="relative w-full mx-auto max-w-7xl ">
+        <div className="relative w-full mx-auto max-w-7xl">
             {/* Slider */}
             <div className="carousel w-full">
                 <div id="item1" className="carousel-item w-full">
@@ -30,22 +36,31 @@ const Slider = () => {
             </div>
 
             {/* Login Form */}
-            <div className="absolute top-0 right-0 bg-gray-900 bg-opacity-70 w-1/4 h-full flex flex-col justify-center p-8">
+            <div className="absolute top-0 right-0 bg-gray-900 bg-opacity-70 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full flex flex-col justify-center p-4 sm:p-8">
                 <h2 className="text-white text-2xl mb-6">Log In</h2>
                 <form className="space-y-4">
-                    <div>
+                    <div className="relative">
                         <input
                             type="text"
                             placeholder="Email or phone"
-                            className="w-full p-2 rounded bg-gray-800 text-white placeholder-gray-500"
+                            className="w-full p-2 pl-10 rounded bg-gray-800 text-white placeholder-gray-500"
                         />
+                        <div className="absolute left-2 top-2.5">
+                            <EnvelopeIcon className="w-5 h-5 text-gray-400" />
+                        </div>
                     </div>
-                    <div>
+                    <div className="relative">
                         <input
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
-                            className="w-full p-2 rounded bg-gray-800 text-white placeholder-gray-500"
+                            className="w-full p-2 pl-10 pr-10 rounded bg-gray-800 text-white placeholder-gray-500"
                         />
+                        <div className="absolute left-2 top-2.5">
+                            <LockClosedIcon className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <div className="absolute right-2 top-2.5 cursor-pointer" onClick={togglePasswordVisibility}>
+                            {showPassword ? <EyeIcon className="w-5 h-5 text-gray-400" /> : <EyeSlashIcon className="w-5 h-5 text-gray-400" />}
+                        </div>
                     </div>
                     <button
                         type="submit"

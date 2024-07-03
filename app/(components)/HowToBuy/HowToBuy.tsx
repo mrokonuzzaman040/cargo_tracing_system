@@ -1,5 +1,3 @@
-// app/(components)/HowToBuy/HowToBuy.tsx
-
 import React from 'react';
 
 const steps = [

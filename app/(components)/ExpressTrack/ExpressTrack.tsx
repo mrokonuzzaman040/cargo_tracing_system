@@ -1,5 +1,3 @@
-// app/(components)/ExpressTrack/ExpressTrack.tsx
-
 import React from 'react';
 import Image from 'next/image';
 
