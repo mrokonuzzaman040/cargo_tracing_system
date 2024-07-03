@@ -8,7 +8,7 @@ const TopNavbar = () => {
                 <div className="flex gap-4">
                     <a href="/">Home</a>
                     <select name="language" id="language">
-                        <option value="en"> English</option>
+                        <option value="en">English</option>
                         <option value="es">Spanish</option>
                         <option value="fr">French</option>
                         <option value="de">German</option>
@@ -25,7 +25,7 @@ const TopNavbar = () => {
                 </div>
                 <div className="flex gap-4 justify-end">
                     <a href="/login">Login</a>
-                    <a href="/register">Register</a>
+                    <a href="auth/register">Register</a>
                 </div>
             </div>
         </div>

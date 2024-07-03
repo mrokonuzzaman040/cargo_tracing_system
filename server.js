@@ -1,47 +1,28 @@
-const { createServer } = require( "https" );
-const { parse } = require( "url" );
-const fs = require( "fs" );
-const cors = require( "cors" );
-const port = process.env.PORT || 3000;
-const dev = process.env.NODE_ENV !== "production";
-const app = next( { dev } );
+// server.js
+
+const express = require('express');
+const next = require('next');
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
 const handle = app.getRequestHandler();
 
-let httpsOptions = {};
+app.prepare().then(() => {
+  const server = express();
 
-if ( dev ) {
-    // Load local SSL certificates for development
-    httpsOptions = {
-        key: fs.readFileSync( process.env.SSL_KEY_PATH_DEV ),
-        cert: fs.readFileSync( process.env.SSL_CERT_PATH_DEV ),
-    };
-} else {
-    // Load production SSL certificates dynamically
-    httpsOptions = {
-        key: fs.readFileSync( process.env.SSL_KEY_PATH ),
-        cert: fs.readFileSync( process.env.SSL_CERT_PATH ),
-    };
-}
+  // Custom route example
+  server.get('/custom-route', (req, res) => {
+    return app.render(req, res, '/custom-route', req.query);
+  });
 
-app.prepare().then( () => {
-    const server = createServer( httpsOptions, ( req, res ) => {
-        const parsedUrl = parse( req.url, true );
-        handle( req, res, parsedUrl );
-    } );
+  // Handle all other routes
+  server.all('*', (req, res) => {
+    return handle(req, res);
+  });
 
-    server.on(
-        "request",
-        cors( {
-            origin: process.env.CORS_ORIGIN, // Set allowed origin in environment variables
-            methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-        } )
-    );
-
-    server.listen( port, ( err ) => {
-        if ( err ) throw err;
-        console.log(
-            `Ready - started server on url: https://${dev ? "localhost" : process.env.NEXT_PUBLIC_BASE_URL
-            }:${port}`
-        );
-    } );
-} );
+  const port = process.env.PORT || 3001; // Change default port to 3001
+  server.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+});

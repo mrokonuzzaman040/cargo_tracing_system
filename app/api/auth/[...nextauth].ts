@@ -1,17 +1,21 @@
 import NextAuth from "next-auth";
-import Providers from "next-auth/providers";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { User } from "next-auth";
 
-export default NextAuth({
+const options = {
   providers: [
-    Providers.Credentials({
+    CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Implement your own login logic here
-        const user = { id: 1, name: "User", email: credentials.email };
+        const user = {
+          id: "1",
+          name: "User",
+          email: credentials?.email as string,
+        };
         if (user) {
           return user;
         } else {
@@ -27,4 +31,12 @@ export default NextAuth({
     verifyRequest: "/auth/verify-request",
     newUser: "/auth/new-user",
   },
-});
+  callbacks: {
+    async session({ session, user }) {
+      session.user.id = user.id;
+      return session;
+    },
+  },
+};
+
+export default NextAuth(options);
