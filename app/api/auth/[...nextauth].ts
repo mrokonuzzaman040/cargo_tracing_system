@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { User } from "next-auth";
+import dbConnect from "../../../lib/mongodb";
+import User from "../../../models/User";
+import bcrypt from "bcryptjs";
 
-const options = {
+export default NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -11,32 +13,39 @@ const options = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const user = {
-          id: "1",
-          name: "User",
-          email: credentials?.email as string,
-        };
-        if (user) {
-          return user;
-        } else {
-          return null;
+        await dbConnect();
+
+        const user = await User.findOne({ email: credentials?.email });
+        if (!user) {
+          throw new Error("No user found with this email");
         }
+
+        const isValid = await bcrypt.compare(
+          credentials?.password,
+          user.password
+        );
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
+        return user;
       },
     }),
   ],
   pages: {
-    signIn: "/auth/signin",
-    signOut: "/auth/signout",
-    error: "/auth/error",
-    verifyRequest: "/auth/verify-request",
-    newUser: "/auth/new-user",
+    signIn: "/public/auth/signin",
   },
   callbacks: {
-    async session({ session, user }) {
-      session.user.id = user.id;
+    async session({ session, token, user }) {
+      // @ts-ignore
+      session.user = token.user;
       return session;
     },
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user;
+      }
+      return token;
+    },
   },
-};
-
-export default NextAuth(options);
+});

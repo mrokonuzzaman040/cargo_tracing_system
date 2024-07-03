@@ -45,7 +45,10 @@ const Register = () => {
                 throw new Error(result.message || 'Something went wrong');
             }
 
-            setMessage('Registration successful');
+            setMessage('Registration successful. Redirecting to verification page...');
+            setTimeout(() => {
+                window.location.href = '/verify';
+            }, 2000);
         } catch (error: any) {
             setMessage(error.message);
         } finally {

@@ -1,45 +1,65 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import bcrypt from "bcryptjs";
-import dbConnect from "../../../lib/mongodb";
-import User from "../../../models/User";
+import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
+import dbConnect from '../../../lib/mongodb';
+import User from '../../../models/User';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method !== "POST") {
-    return res.status(405).end();
-  }
+dotenv.config(); // Ensure environment variables are loaded
 
-  const { contactName, phone, email, password } = req.body;
+export async function POST(req: Request) {
+  const { contactName, phone, email, password } = await req.json();
 
   if (!contactName || !phone || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
   }
 
   await dbConnect();
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return res.status(409).json({ message: "User already exists" });
+    return NextResponse.json({ message: 'User already exists' }, { status: 409 });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const verificationCode = Math.floor(10000000 + Math.random() * 90000000).toString();
 
   const newUser = new User({
     contactName,
     phone,
     email,
     password: hashedPassword,
+    verificationCode,
+    isVerified: false,
   });
 
   try {
     await newUser.save();
-    return res
-      .status(201)
-      .json({ message: "User created", userId: newUser._id });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
-  }
-};
 
-export default handler;
+    // Send verification email
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Email Verification',
+      text: `Your verification code is: ${verificationCode}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return NextResponse.json({ message: 'User created', userId: newUser._id }, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating user or sending email:', error);
+    return NextResponse.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
+  }
+}
