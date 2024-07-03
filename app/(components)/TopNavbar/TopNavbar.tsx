@@ -24,7 +24,7 @@ const TopNavbar = () => {
 
                 </div>
                 <div className="flex gap-4 justify-end">
-                    <a href="/login">Login</a>
+                    <a href="/">Login</a>
                     <a href="auth/register">Register</a>
                 </div>
             </div>

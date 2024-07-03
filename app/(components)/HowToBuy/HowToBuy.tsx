@@ -37,7 +37,7 @@ const HowToBuy = () => {
                                     <Image src={step.image} width={32} height={32} alt={step.title} />
                                 </div>
                                 <h3 className="font-bold mb-2">{step.title}</h3>
-                                <p className="text-sm">{step.description}</p>
+                                <p className="text-sm text-wrap">{step.description}</p>
                             </div>
                         </li>
                     ))}

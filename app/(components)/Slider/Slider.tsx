@@ -65,7 +65,7 @@ const Slider = () => {
                 <div className="text-right text-white mt-4">
                     <a href="#" className="text-sm">Forgot password?</a>
                     <br />
-                    <a href="#" className="text-sm">Register</a>
+                    <a href="/auth/register" className="text-sm">Register</a>
                 </div>
             </div>
 
