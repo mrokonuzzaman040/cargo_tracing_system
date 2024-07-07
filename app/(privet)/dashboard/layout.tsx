@@ -1,4 +1,5 @@
 import React from 'react';
+import "../globals.css";
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -21,6 +22,7 @@ export default function Layout({
             </head>
             <body>
                 <div id="root">
+                    
                     {children}
                 </div>
             </body>

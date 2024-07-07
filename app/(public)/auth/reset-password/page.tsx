@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-const ResetPassword = () => {
+const ResetPasswordForm = () => {
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
@@ -99,5 +99,11 @@ const ResetPassword = () => {
         </div>
     );
 };
+
+const ResetPassword = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+        <ResetPasswordForm />
+    </Suspense>
+);
 
 export default ResetPassword;
