@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
 const Slider = () => {
@@ -34,10 +34,8 @@ const Slider = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Set the token in a cookie
-                document.cookie = `token=${data.token}; path=/; HttpOnly; Secure; SameSite=Strict;`;
                 // Redirect to dashboard or another protected page
-                router.push('/privet/dashboard');
+                router.push('/dashboard');
             } else {
                 setError(data.message || 'Login failed');
             }
