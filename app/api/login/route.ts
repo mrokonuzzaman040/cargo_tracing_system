@@ -41,7 +41,13 @@ export async function POST(req: Request) {
       expiresIn: "1h",
     });
 
-    return NextResponse.json({ token }, { status: 200 });
+    const response = NextResponse.json({ message: "Login successful" });
+    response.headers.append(
+      "Set-Cookie",
+      `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`
+    );
+
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
