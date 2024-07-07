@@ -9,7 +9,10 @@ const nextConfig = {
     images: {
         domains: [ 'img.daisyui.com' ],
     },
-    reactStrictMode: true
+    reactStrictMode: true,
+    experimental: {
+        
+    },
 };
 
 export default nextConfig;
