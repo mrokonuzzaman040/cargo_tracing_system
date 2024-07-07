@@ -36,7 +36,7 @@ const Verify = () => {
 
       setMessage('Verification successful. Redirecting to dashboard...');
       setTimeout(() => {
-        router.push('/private/dashboard');
+        router.push('/');
       }, 2000);
     } catch (error: any) {
       setMessage(error.message);

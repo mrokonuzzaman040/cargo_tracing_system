@@ -7,8 +7,9 @@ const nextConfig = {
         EMAIL_PASS: process.env.EMAIL_PASS,
     },
     images: {
-        domains: ['img.daisyui.com'],
+        domains: [ 'img.daisyui.com' ],
     },
+    reactStrictMode: true
 };
 
 export default nextConfig;

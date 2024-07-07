@@ -1,5 +1,9 @@
 import React from 'react';
 import "./globals.css";
+import TopNavbar from '../(components)/TopNavbar/TopNavbar';
+import Footer from '../(components)/Footer/Footer';
+import Navbar from '../(components)/Navbar/Navbar';
+
 
 export const metadata = {
   title: 'Cargo Shipping Company',
@@ -21,7 +25,12 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" />
       </head>
       <body>
-        <div className='' id="root">{children}</div>
+        <div className='' id="root">
+          <TopNavbar />
+          <Navbar />
+          {children}
+          <Footer />
+        </div>
       </body>
 
     </html>

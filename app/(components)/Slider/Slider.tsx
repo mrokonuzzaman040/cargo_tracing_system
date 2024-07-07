@@ -5,9 +5,43 @@ import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/
 
 const Slider = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
+    };
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Handle successful login (e.g., store the token, redirect, etc.)
+                localStorage.setItem('token', data.token);
+                alert('Login successful!');
+            } else {
+                setError(data.message || 'Login failed');
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -31,12 +65,15 @@ const Slider = () => {
             {/* Login Form */}
             <div className="absolute top-0 right-0 bg-gray-900 bg-opacity-70 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full flex flex-col justify-center p-4 sm:p-8">
                 <h2 className="text-white text-2xl mb-6">Log In</h2>
-                <form className="space-y-4">
+                {error && <p className="text-red-500">{error}</p>}
+                <form className="space-y-4" onSubmit={handleLogin}>
                     <div className="relative">
                         <input
                             type="text"
                             placeholder="Email or phone"
                             className="w-full p-2 pl-10 rounded bg-gray-800 text-white placeholder-gray-500"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <div className="absolute left-2 top-2.5">
                             <EnvelopeIcon className="w-5 h-5 text-gray-400" />
@@ -47,6 +84,8 @@ const Slider = () => {
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Password"
                             className="w-full p-2 pl-10 pr-10 rounded bg-gray-800 text-white placeholder-gray-500"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <div className="absolute left-2 top-2.5">
                             <LockClosedIcon className="w-5 h-5 text-gray-400" />
@@ -58,12 +97,15 @@ const Slider = () => {
                     <button
                         type="submit"
                         className="w-full p-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+                        disabled={loading}
                     >
-                        Sign In
+                        {loading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
                 <div className="text-right text-white mt-4">
-                    <a href="#" className="text-sm">Forgot password?</a>
+                    <a href="/auth/forgot-password" className="text-sm text-blue-500 hover:underline">
+                        Forgot password?
+                    </a>
                     <br />
                     <a href="/auth/register" className="text-sm">Register</a>
                 </div>

@@ -4,9 +4,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon, UserIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import TopNavbar from '@/app/(components)/TopNavbar/TopNavbar';
-import Navbar from '@/app/(components)/Navbar/Navbar';
-import Footer from '@/app/(components)/Footer/Footer';
 
 interface FormData {
     contactName: string;
@@ -70,10 +67,6 @@ const Register = () => {
 
     return (
         <>
-            <div className="">
-                <TopNavbar />
-                <Navbar />
-            </div>
             <div className="container mx-auto max-w-7xl p-4">
                 <div className="rounded p-4 flex flex-col md:flex-row">
                     <div className="w-full md:w-2/3 p-4">
@@ -184,7 +177,6 @@ const Register = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
         </>
     );
 };

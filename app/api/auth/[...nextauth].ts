@@ -33,8 +33,8 @@ export default NextAuth({
     }),
   ],
   pages: {
-    signIn: "/public/auth/signin",
-    
+    signIn: "/",
+
   },
   callbacks: {
     async session({ session, token, user }) {
