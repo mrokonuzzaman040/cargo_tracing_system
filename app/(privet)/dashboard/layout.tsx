@@ -25,7 +25,7 @@ export default function Layout({
                 <header className="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white border-b text-sm py-2.5 sm:py-4 lg:ps-64 dark:bg-neutral-800 dark:border-neutral-700">
                     <nav className="flex basis-full items-center w-full mx-auto px-4 sm:px-6" aria-label="Global">
                         <div className="me-5 lg:me-0 lg:hidden">
-                            <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="IAExp">
+                            <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Preline">
                                 <img className="w-28 h-auto" src="./logo.png" alt="Logo" />
                             </a>
                         </div>
@@ -94,7 +94,7 @@ export default function Layout({
                     <div className="flex justify-between items-center py-2">
                         <ol className="ms-3 flex items-center whitespace-nowrap">
                             <li className="flex items-center text-sm text-gray-800 dark:text-neutral-400">
-                                Application Layout
+                                User Panel
                                 <svg className="flex-shrink-0 mx-3 overflow-visible size-2.5 text-gray-400 dark:text-neutral-500" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M5 1L10.6869 7.16086C10.8637 7.35239 10.8637 7.64761 10.6869 7.83914L5 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
