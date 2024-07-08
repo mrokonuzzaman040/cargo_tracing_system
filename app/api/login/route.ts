@@ -37,14 +37,26 @@ export async function POST(req: Request) {
       );
     }
 
-    const token = jwt.sign({ userId: user._id }, SECRET_KEY, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      SECRET_KEY,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    // Save the token in the database
+    user.token = token;
+    await user.save();
 
     const response = NextResponse.json({ message: "Login successful" });
     response.headers.append(
       "Set-Cookie",
       `token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
+    );
+    response.headers.append(
+      "Set-Cookie",
+      `email=${email}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
     );
 
     return response;

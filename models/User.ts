@@ -14,6 +14,7 @@ const UserSchema = new mongoose.Schema({
   isAccountLocked: { type: Boolean, default: false },
   accountType: { type: String, default: "Personal account" }, // New field
   address: { type: String }, // New field
+  token: { type: String }, // New field
 });
 
 // Pre-save middleware to enforce verificationCode requirement on creation

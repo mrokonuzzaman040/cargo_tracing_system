@@ -3,12 +3,13 @@ import dotenv from "dotenv";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import { jwtVerify } from "jose";
+import { NextRequest } from "next/server";
 
 dotenv.config(); // Ensure environment variables are loaded
 
-const SECRET_KEY = new TextEncoder().encode(process.env.NEXTAUTH_SECRET || "your_secret");
-
-import { NextRequest } from "next/server";
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.NEXTAUTH_SECRET || "your_secret"
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,14 +24,14 @@ export async function POST(req: NextRequest) {
 
     const { payload } = await jwtVerify(token, SECRET_KEY);
 
-    if (!payload || !payload.email) {
+    if (!payload || typeof payload !== "object" || !payload.email) {
       return NextResponse.json(
         { message: "Invalid token payload" },
         { status: 401 }
       );
     }
 
-    const email = payload.email;
+    const email = payload.email as string;
 
     await dbConnect();
 
