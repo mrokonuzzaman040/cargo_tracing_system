@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import dbConnect from '../../../lib/mongodb';
-import User from '../../../models/User';
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import dbConnect from "../../../lib/mongodb";
+import User from "../../../models/User";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
 dotenv.config(); // Ensure environment variables are loaded
 
@@ -11,19 +11,27 @@ export async function POST(req: Request) {
   const { contactName, phone, email, password } = await req.json();
 
   if (!contactName || !phone || !email || !password) {
-    return NextResponse.json({ message: 'All fields are required' }, { status: 400 });
+    return NextResponse.json(
+      { message: "All fields are required" },
+      { status: 400 }
+    );
   }
 
   await dbConnect();
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return NextResponse.json({ message: 'User already exists' }, { status: 409 });
+    return NextResponse.json(
+      { message: "User already exists" },
+      { status: 409 }
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const verificationCode = Math.floor(
+    100000 + Math.random() * 900000
+  ).toString();
 
   const newUser = new User({
     contactName,
@@ -51,15 +59,21 @@ export async function POST(req: Request) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Email Verification',
+      subject: "Email Verification",
       text: `Your verification code is: ${verificationCode}`,
     };
 
     await transporter.sendMail(mailOptions);
 
-    return NextResponse.json({ message: 'User created', userId: newUser._id }, { status: 201 });
+    return NextResponse.json(
+      { message: "User created", userId: newUser._id },
+      { status: 201 }
+    );
   } catch (error: any) {
-    console.error('Error creating user or sending email:', error);
-    return NextResponse.json({ message: 'Internal Server Error', error: error.message }, { status: 500 });
+    console.error("Error creating user or sending email:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error", error: error.message },
+      { status: 500 }
+    );
   }
 }
