@@ -6,10 +6,14 @@ const UserSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  verificationCode: { type: String }, // Optional field for email verification
+  verificationCode: { type: String }, // Remove the required constraint here
   isVerified: { type: Boolean, default: false },
-  resetPasswordToken: { type: String }, // Optional field for password reset token
-  resetPasswordExpires: { type: Date }, // Optional field for password reset token expiry
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+  failedPasswordAttempts: { type: Number, default: 0 },
+  isAccountLocked: { type: Boolean, default: false },
+  accountType: { type: String, default: "Personal account" }, // New field
+  address: { type: String }, // New field
 });
 
 // Pre-save middleware to enforce verificationCode requirement on creation

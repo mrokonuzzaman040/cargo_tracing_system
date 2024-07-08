@@ -3,6 +3,7 @@ import "./globals.css";
 import TopNavbar from '../(components)/TopNavbar/TopNavbar';
 import Footer from '../(components)/Footer/Footer';
 import Navbar from '../(components)/Navbar/Navbar';
+import PrelineScript from '../(components)/PrelineScript';
 
 
 export const metadata = {
@@ -32,7 +33,7 @@ export default function RootLayout({
           <Footer />
         </div>
       </body>
-
+      <PrelineScript />
     </html>
   );
 }

@@ -4,6 +4,7 @@ import dbConnect from "../../../lib/mongodb";
 import User from "../../../models/User";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { text } from "stream/consumers";
 
 dotenv.config(); // Ensure environment variables are loaded
 
@@ -60,7 +61,73 @@ export async function POST(req: Request) {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Email Verification",
-      text: `Your verification code is: ${verificationCode}`,
+      html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Email Verification</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  margin: 0;
+                  padding: 0;
+              }
+              .container {
+                  width: 100%;
+                  padding: 20px;
+                  background-color: #ffffff;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                  margin: 20px auto;
+                  max-width: 600px;
+              }
+              .header {
+                  background-color: #4CAF50;
+                  padding: 20px;
+                  text-align: center;
+                  color: #ffffff;
+              }
+              .content {
+                  padding: 20px;
+              }
+              .footer {
+                  background-color: #f1f1f1;
+                  padding: 10px;
+                  text-align: center;
+                  color: #888888;
+              }
+              .button {
+                  display: inline-block;
+                  padding: 10px 20px;
+                  margin: 20px 0;
+                  background-color: #4CAF50;
+                  color: #ffffff;
+                  text-decoration: none;
+                  border-radius: 5px;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="header">
+                  <h1>Email Verification</h1>
+              </div>
+              <div class="content">
+                  <p>Hello,</p>
+                  <p>Thank you for signing up. To complete your registration, please verify your email address by using the verification code below:</p>
+                  <p style="font-size: 24px; font-weight: bold; color: #4CAF50;">${verificationCode}</p>
+                  <p>If you did not sign up for this account, you can ignore this email.</p>
+                  <p>Best regards,<br>Your Company Name</p>
+              </div>
+              <div class="footer">
+                  <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+      `,
     };
 
     await transporter.sendMail(mailOptions);
