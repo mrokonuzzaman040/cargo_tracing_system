@@ -1,6 +1,7 @@
 import React from 'react';
 import "../globals.css";
 import PrelineScript from '@/app/(components)/PrelineScript';
+import { about, logo, question, rate } from '@/var';
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -26,7 +27,7 @@ export default function Layout({
                     <nav className="flex basis-full items-center w-full mx-auto px-4 sm:px-6" aria-label="Global">
                         <div className="me-5 lg:me-0 lg:hidden">
                             <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Preline">
-                                <img className="w-28 h-auto" src="./logo.png" alt="Logo" />
+                                <img className="w-28 h-auto" src={logo} alt="Logo" />
                             </a>
                         </div>
 
@@ -123,7 +124,7 @@ export default function Layout({
  ">
                     <div className="px-8 pt-4">
                         <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Logo">
-                            <img className="w-28 h-auto" src="./logo.png" alt="Logo" />
+                            <img className="w-28 h-auto" src={logo} alt="Logo" />
                         </a>
                     </div>
 
@@ -181,7 +182,7 @@ export default function Layout({
                                 <div id="projects-accordion-child" className="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
                                     <ul className="pt-2 ps-2">
                                         <li>
-                                            <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
+                                            <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/dashboard/add-new-order">
                                                 Add new order
                                             </a>
                                         </li>
@@ -297,15 +298,15 @@ export default function Layout({
                                 Tracking
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src="./fees.svg" alt="Image Description" />
+                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" />
                                 Rates
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src="./question.svg" alt="Image Description" />
+                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" />
                                 How to order
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src="./about-us.svg" alt="Image Description" />
+                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" />
                                 About us
                             </a></li>
                         </ul>
