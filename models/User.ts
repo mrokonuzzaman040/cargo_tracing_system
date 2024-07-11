@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   accountType: { type: String, default: "Personal account" }, // New field
   address: { type: String }, // New field
   token: { type: String }, // New field
+  role: { type: String, enum: ["user", "admin", "rider"], default: "user" }, // New role field
 });
 
 // Pre-save middleware to enforce verificationCode requirement on creation

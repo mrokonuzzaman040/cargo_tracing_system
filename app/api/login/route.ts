@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import dbConnect from "../../../lib/mongodb";
-import User from "../../../models/User";
+import { NextResponse, NextRequest } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -9,7 +9,7 @@ dotenv.config(); // Ensure environment variables are loaded
 
 const SECRET_KEY = process.env.NEXTAUTH_SECRET || "your_secret";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email, role: user.role },
       SECRET_KEY,
       {
         expiresIn: "1h",
@@ -49,15 +49,22 @@ export async function POST(req: Request) {
     user.token = token;
     await user.save();
 
-    const response = NextResponse.json({ message: "Login successful" });
-    response.headers.append(
-      "Set-Cookie",
-      `token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
-    );
-    response.headers.append(
-      "Set-Cookie",
-      `email=${email}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
-    );
+    const response = NextResponse.json({
+      message: "Login successful",
+      token: token,
+    });
+    response.cookies.set("token", token, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 3600,
+    });
+    response.cookies.set("email", email, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 3600,
+    });
 
     return response;
   } catch (error) {

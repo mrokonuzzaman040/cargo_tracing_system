@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
+
 
 const Slider = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -34,8 +36,22 @@ const Slider = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Redirect to dashboard or another protected page
-                router.push('/dashboard');
+                const { token } = data || {};
+
+                if (token) {
+                    const decodedToken = jwtDecode<{ role: string }>(token);
+                    const { role } = decodedToken;
+
+                    if (role === 'admin') {
+                        router.push('/admin-dashboard');
+                    } else if (role === 'rider') {
+                        router.push('/rider-dashboard');
+                    } else if (role === 'user') {
+                        router.push('/dashboard');
+                    }
+                } else {
+                    setError('Login failed. No token received.');
+                }
             } else {
                 setError(data.message || 'Login failed');
             }
