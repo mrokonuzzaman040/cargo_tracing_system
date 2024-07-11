@@ -112,6 +112,10 @@ const Page: React.FC = () => {
                                 {...register('country', { required: 'Country is required' })}
                             >
                                 <option value="">Select Country</option>
+                                <option value="china">China</option>
+                                <option value="usa">USA</option>
+                                <option value="uk">UK</option>
+                                <option value="germany">Germany</option>
                             </select>
                             {getErrorMessage(errors.country)}
                         </div>
@@ -122,6 +126,10 @@ const Page: React.FC = () => {
                                 {...register('city', { required: 'City is required' })}
                             >
                                 <option value="">Select City</option>
+                                <option value="beijing">Beijing</option>
+                                <option value="shanghai">Shanghai</option>
+                                <option value="new-york">New York</option>
+                                <option value="london">London</option>
                             </select>
                             {getErrorMessage(errors.city)}
                         </div>
@@ -215,6 +223,10 @@ const Page: React.FC = () => {
                                 {...register('deliveryMethod', { required: 'Delivery method is required' })}
                             >
                                 <option value="">Select Delivery Method</option>
+                                <option value="door-to-door">Door to Door</option>
+                                <option value="door-to-port">Door to Port</option>
+                                <option value="port-to-port">Port to Port</option>
+                                <option value="port-to-door">Port to Door</option>
                             </select>
                             {getErrorMessage(errors.deliveryMethod)}
                         </div>
@@ -225,6 +237,7 @@ const Page: React.FC = () => {
                                 {...register('pickupAddress', { required: 'Pick-up address is required' })}
                             >
                                 <option value="">Select Pick-up Address</option>
+                                <option value="beijing">Beijing</option>
                             </select>
                             {getErrorMessage(errors.pickupAddress)}
                         </div>
@@ -235,6 +248,10 @@ const Page: React.FC = () => {
                                 {...register('payment', { required: 'Payment is required' })}
                             >
                                 <option value="">Select Payment</option>
+                                <option value="cash">Cash</option>
+                                <option value="credit-card">Credit Card</option>
+                                <option value="bank-transfer">Bank Transfer</option>
+                                <option value="paypal">Paypal</option>
                             </select>
                             {getErrorMessage(errors.payment)}
                         </div>
@@ -245,6 +262,9 @@ const Page: React.FC = () => {
                                 {...register('shippingMethod', { required: 'Shipping method is required' })}
                             >
                                 <option value="">Select Shipping Method</option>
+                                <option value="air">Air</option>
+                                <option value="sea">Sea</option>
+                                <option value="land">Land</option>
                             </select>
                             {getErrorMessage(errors.shippingMethod)}
                         </div>
