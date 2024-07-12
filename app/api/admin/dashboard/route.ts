@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     await dbConnect();
 
-    const completedCount = await Order.countDocuments({ status: "completed" });
+    const completedCount = await Order.countDocuments({ status: "delivered" });
     const returnedCount = await Order.countDocuments({ status: "returned" });
     const pendingCount = await Order.countDocuments({ status: "pending" });
     const refundCount = await Order.countDocuments({ status: "refund" });
