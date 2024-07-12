@@ -3,8 +3,10 @@
 import React, { useState, useMemo } from 'react';
 import axios from 'axios';
 import { useQuery, QueryClient, QueryClientProvider } from 'react-query';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import 'chart.js/auto';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface Payment {
     date: string;
@@ -22,11 +24,13 @@ interface Account {
 
 const queryClient = new QueryClient();
 
-const fetchAccountData = async (page: number, accountsPerPage: number) => {
+const fetchAccountData = async (page: number, accountsPerPage: number, startDate: Date, endDate: Date) => {
     const response = await axios.get('/api/admin/account', {
         params: {
             page,
             limit: accountsPerPage,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
         },
         withCredentials: true,
     });
@@ -37,10 +41,12 @@ const AccountPage = () => {
     const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const accountsPerPage = 10;
+    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [endDate, setEndDate] = useState<Date>(new Date());
 
     const { data, error, isLoading } = useQuery(
-        ['accountData', currentPage],
-        () => fetchAccountData(currentPage, accountsPerPage),
+        ['accountData', currentPage, startDate, endDate],
+        () => fetchAccountData(currentPage, accountsPerPage, startDate, endDate),
         { keepPreviousData: true }
     );
 
@@ -89,12 +95,54 @@ const AccountPage = () => {
         };
     }, [data]);
 
+    const paymentData = useMemo(() => {
+        if (!selectedAccount) return { labels: [], datasets: [] };
+
+        return {
+            labels: selectedAccount.payments.map(payment => new Date(payment.date).toLocaleDateString()),
+            datasets: [
+                {
+                    label: 'Payments',
+                    data: selectedAccount.payments.map(payment => payment.amount),
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1,
+                },
+            ],
+        };
+    }, [selectedAccount]);
+
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error fetching account data</div>;
 
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Account Management</h1>
+
+            <div className="mb-4 flex space-x-4">
+                <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                        Start Date
+                    </label>
+                    <DatePicker
+                        selected={startDate}
+                        onChange={(date: Date | null) => setStartDate(date!)}
+                        dateFormat="yyyy-MM-dd"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                        End Date
+                    </label>
+                    <DatePicker
+                        selected={endDate}
+                        onChange={(date: Date | null) => setEndDate(date!)}
+                        dateFormat="yyyy-MM-dd"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    />
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {data.accounts.map((account: Account) => (
@@ -121,6 +169,13 @@ const AccountPage = () => {
                 <h2 className="text-xl font-semibold mb-4">Profit & Loss Overview</h2>
                 <Line data={profitLossData} />
             </div>
+
+            {selectedAccount && (
+                <div className="mt-8">
+                    <h2 className="text-xl font-semibold mb-4">Payments Overview</h2>
+                    <Doughnut data={paymentData} />
+                </div>
+            )}
 
             <div className="flex justify-between items-center mt-4">
                 <button
