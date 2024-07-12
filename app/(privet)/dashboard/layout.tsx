@@ -2,6 +2,7 @@ import React from 'react';
 import "../globals.css";
 import PrelineScript from '@/app/(components)/PrelineScript';
 import { about, logo, question, rate } from '@/var';
+import { ToastContainer } from 'react-toastify';
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -317,6 +318,7 @@ export default function Layout({
                     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                         {children}
                     </div>
+                    <ToastContainer />
                 </div>
             </body>
             <PrelineScript />

@@ -73,7 +73,7 @@ const DeliveredOrders: React.FC = () => {
                             <tr key={order._id}>
                                 <td className="py-2 px-4 border">{order._id}</td>
                                 <td className="py-2 px-4 border">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border">{order.status}</td>
+                                <td className="py-2 px-4 border uppercase">{order.status}</td>
                                 <td className="py-2 px-4 border">{order.estimatedFee}</td>
                                 <td className="py-2 px-4 border">
                                     <button className="bg-blue-500 text-white py-1 px-3 rounded">View</button>

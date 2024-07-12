@@ -53,7 +53,7 @@ const OrderHistory: React.FC = () => {
                             <tr key={order._id}>
                                 <td className="py-2 px-4 border">{order._id}</td>
                                 <td className="py-2 px-4 border">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border">{order.status}</td>
+                                <td className="py-2 px-4 border uppercase">{order.status}</td>
                                 <td className="py-2 px-4 border">{order.estimatedFee}</td>
                                 <td className="py-2 px-4 border">
                                     {/* You can add a link or button to view more details */}

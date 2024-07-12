@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import axios from 'axios';
-import Modal from 'react-modal';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import GoodsModal from './GoodsModal';
+import { useRouter } from 'next/navigation';
 
 type FormValues = {
-    sender: any;
-    receiver: any;
     senderName: string;
     senderPhonePrefix: string;
     senderPhone: string;
@@ -26,20 +27,42 @@ type FormValues = {
     shippingMethod: string;
     terms: boolean;
     estimatedFee?: string;
+    goodsList: Array<GoodsFormValues & { imageUrl: string }>;
 };
+
+interface GoodsFormValues {
+    domesticWb: string;
+    natureOfGoods: string;
+    itemName: string;
+    weight: string;
+    declaredValue: string;
+    count: string;
+    image: FileList;
+}
 
 const Page: React.FC = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [orderData, setOrderData] = useState<FormValues | null>(null);
+    const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [goodsList, setGoodsList] = useState<Array<GoodsFormValues & { imageUrl: string }>>([]);
+    const router = useRouter();
 
     const onSubmit = async (data: FormValues) => {
+        setLoading(true);
+        data.goodsList = goodsList;
         try {
             const response = await axios.post('/api/orders', data);
-            setOrderData(response.data.order);
-            setIsModalOpen(true);
+            if (response.status === 201) {
+                toast.success('Order submitted successfully');
+                setTimeout(() => {
+                    router.push('dashboard/order-history');
+                }, 1500);
+            }
         } catch (error) {
             console.error('Error saving order:', error);
+            toast.error('Failed to submit order');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -47,12 +70,13 @@ const Page: React.FC = () => {
         error: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined,
     ): React.ReactNode => {
         if (error) {
-            // @ts-ignore   
-            return <p className="text-red-500 text-xs italic">{error.message}</p>;
+            return <p className="text-red-500 text-xs italic">
+                {/* @ts-ignore */}
+                {error.message}
+            </p>;
         }
         return null;
     };
-
 
     return (
         <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
@@ -75,12 +99,17 @@ const Page: React.FC = () => {
                         <div>
                             <label className="block text-gray-700 text-sm font-bold mb-2">Phone <span className="text-red-500">*</span></label>
                             <div className="flex">
-                                <input
-                                    type="text"
+                                <select
                                     className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhonePrefix && 'border-red-500'}`}
-                                    placeholder="+86"
                                     {...register('senderPhonePrefix', { required: 'Phone prefix is required' })}
-                                />
+                                >
+                                    <option value="+86">+86</option>
+                                    <option value="+1">+1</option>
+                                    <option value="+44">+44</option>
+                                    <option value="+49">+49</option>
+                                    <option value="+81">+81</option>
+                                    <option value="+82">+82</option>
+                                </select>
                                 <input
                                     type="text"
                                     className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhone && 'border-red-500'}`}
@@ -170,16 +199,27 @@ const Page: React.FC = () => {
                         <div>
                             <label className="block text-gray-700 text-sm font-bold mb-2">Phone <span className="text-red-500">*</span></label>
                             <div className="flex">
-                                <input
-                                    type="text"
+                                <select
                                     className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhonePrefix && 'border-red-500'}`}
-                                    placeholder="+86"
                                     {...register('receiverPhonePrefix', { required: 'Phone prefix is required' })}
-                                />
+                                >
+                                    <option value="+86">+86</option>
+                                    <option value="+1">+1</option>
+                                    <option value="+44">+44</option>
+                                    <option value="+49">+49</option>
+                                    <option value="+81">+81</option>
+                                    <option value="+82">+82</option>
+                                </select>
                                 <input
                                     type="text"
                                     className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhone && 'border-red-500'}`}
-                                    {...register('receiverPhone', { required: 'Phone is required' })}
+                                    {...register('receiverPhone', {
+                                        required: 'Phone is required',
+                                        pattern: {
+                                            value: /^[0-9]{10}$/,
+                                            message: 'Invalid phone number'
+                                        }
+                                    })}
                                 />
                             </div>
                             {getErrorMessage(errors.receiverPhone)}
@@ -201,15 +241,27 @@ const Page: React.FC = () => {
                                     <th className="py-2 px-4 border">Weight</th>
                                     <th className="py-2 px-4 border">Declared value</th>
                                     <th className="py-2 px-4 border">Count</th>
-                                    <th className="py-2 px-4 border">Operate</th>
+                                    <th className="py-2 px-4 border">Image</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* Add dynamic rows here */}
+                                {goodsList.map((goods, index) => (
+                                    <tr key={index}>
+                                        <td className="py-2 px-4 border">{goods.domesticWb}</td>
+                                        <td className="py-2 px-4 border">{goods.natureOfGoods}</td>
+                                        <td className="py-2 px-4 border">{goods.itemName}</td>
+                                        <td className="py-2 px-4 border">{goods.weight}</td>
+                                        <td className="py-2 px-4 border">{goods.declaredValue}</td>
+                                        <td className="py-2 px-4 border">{goods.count}</td>
+                                        <td className="py-2 px-4 border">
+                                            <img src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} className="h-16" />
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
-                    <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">Add goods</button>
+                    <button type="button" className="mt-4 bg-blue-500 text-white py-2 px-4 rounded" onClick={() => setIsGoodsModalOpen(true)}>Add goods</button>
                 </div>
 
                 {/* Other Information */}
@@ -287,46 +339,21 @@ const Page: React.FC = () => {
                     <label className="block text-gray-700 text-sm font-bold mb-2">Estimated fee</label>
                     <input
                         type="text"
+                        disabled
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         {...register('estimatedFee')}
                     />
                 </div>
 
                 <div className="text-right">
-                    <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">Submit</button>
+                    <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+                        {loading ? 'Loading...' : 'Submit Order'}
+                    </button>
                 </div>
             </form>
 
-            {orderData && (
-                <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-                    <h2 className="text-2xl font-bold mb-4">Order Submitted</h2>
-                    <div className="mb-4">
-                        <h3 className="text-xl font-semibold mb-2">Sender Information</h3>
-                        <p>Name: {orderData.sender.name}</p>
-                        <p>Phone: {orderData.sender.phonePrefix} {orderData.sender.phone}</p>
-                        <p>Address: {orderData.sender.address}</p>
-                    </div>
-                    <div className="mb-4">
-                        <h3 className="text-xl font-semibold mb-2">Receiver Information</h3>
-                        <p>Name: {orderData.receiver.name}</p>
-                        <p>Phone: {orderData.receiver.phonePrefix} {orderData.receiver.phone}</p>
-                        <p>Country: {orderData.receiver.country}</p>
-                        <p>City: {orderData.receiver.city}</p>
-                        <p>Street: {orderData.receiver.street}</p>
-                        <p>District: {orderData.receiver.district}</p>
-                        <p>Company: {orderData.receiver.company}</p>
-                    </div>
-                    <div className="mb-4">
-                        <h3 className="text-xl font-semibold mb-2">Other Information</h3>
-                        <p>Delivery Method: {orderData.deliveryMethod}</p>
-                        <p>Pick-up Address: {orderData.pickupAddress}</p>
-                        <p>Payment: {orderData.payment}</p>
-                        <p>Shipping Method: {orderData.shippingMethod}</p>
-                        <p>Estimated Fee: {orderData.estimatedFee}</p>
-                    </div>
-                    <button onClick={() => setIsModalOpen(false)} className="bg-blue-500 text-white py-2 px-4 rounded">Close</button>
-                </Modal>
-            )}
+            {/* <GoodsModal isOpen={isGoodsModalOpen} onRequestClose={() => setIsGoodsModalOpen(false)}
+                onAddGoods={addGoods} /> */}
         </div>
     );
 };
