@@ -56,7 +56,8 @@ const OrderSchema: Schema = new Schema({
   shippingMethod: { type: String, required: true },
   estimatedFee: { type: String },
   status: { type: String, default: "pending" },
-  orderNumber: { type: String, required: true }, // Add the order number field
+  orderNumber: { type: String, required: true },
+  cancellationReason: { type: String },
   createdAt: {
     type: Date,
     default: Date.now,
