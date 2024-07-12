@@ -27,6 +27,6 @@
     "**/*.ts", 
     "**/*.tsx", 
     ".next/types/**/*.ts", 
-    "lib/auth.ts", "app/api/orders/track/d" ],
+    "lib/auth.ts", "app/api/orders/track/d", "app/api/admin/order-stats" ],
   "exclude": ["node_modules"]
 }

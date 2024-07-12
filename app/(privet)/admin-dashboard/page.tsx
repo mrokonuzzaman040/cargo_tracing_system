@@ -1,154 +1,194 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState, useMemo } from 'react';
+import axios from 'axios';
+import { Bar, Line } from 'react-chartjs-2';
+import 'chart.js/auto';
+import dayjs from 'dayjs';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
-interface UserInfo {
-    name: string;
-    phone: string;
-    address: string;
-    memberNo: string;
-    accountType: string;
-    contactEmail: string;
-}
-
-const Dashboard = () => {
+const AdminDashboard = () => {
+    const [dashboardData, setDashboardData] = useState({
+        completedCount: 0,
+        returnedCount: 0,
+        pendingCount: 0,
+        refundCount: 0,
+        paidCount: 0,
+    });
+    const [orderStats, setOrderStats] = useState<{ _id: string; count: number }[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-    const [editable, setEditable] = useState(false);
-    const [updatedUserInfo, setUpdatedUserInfo] = useState<UserInfo | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [interval, setInterval] = useState('day');
+    const [startDate, setStartDate] = useState(dayjs().subtract(30, 'day').toDate());
+    const [endDate, setEndDate] = useState(new Date());
 
     useEffect(() => {
-        const fetchUserInfo = async () => {
+        const fetchDashboardData = async () => {
+            setLoading(true);
             try {
-                const token = Cookies.get('token');
-
-                // if (!token) {
-                //     setError('No token found');
-                //     setLoading(false);
-                //     return;
-                // }
-
-                const response = await fetch('/api/user/info', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    setUserInfo(data.user);
-                    setUpdatedUserInfo(data.user);
-                } else {
-                    setError(data.message);
-                }
+                const response = await axios.get('/api/admin/dashboard');
+                setDashboardData(response.data);
             } catch (err) {
-                setError('An error occurred. Please try again.');
+                setError('Error fetching dashboard data');
+                console.error('Error fetching dashboard data:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchUserInfo();
-    }, []);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        if (updatedUserInfo) {
-            setUpdatedUserInfo({ ...updatedUserInfo, [name]: value });
-        }
-    };
-
-    const handleSave = async () => {
-        if (!updatedUserInfo) return;
-
-        setLoading(true);
-
-        try {
-            const token = Cookies.get('token');
-            if (!token) {
-                setError('No token found');
+        const fetchOrderStats = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get('/api/admin/order-stats', {
+                    params: {
+                        startDate: startDate.toISOString(),
+                        endDate: endDate.toISOString(),
+                        interval
+                    }
+                });
+                setOrderStats(response.data.stats);
+            } catch (err) {
+                setError('Error fetching order stats');
+                console.error('Error fetching order stats:', err);
+            } finally {
                 setLoading(false);
-                return;
             }
+        };
 
-            const response = await fetch('/api/user/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(updatedUserInfo),
-            });
+        fetchDashboardData();
+        fetchOrderStats();
+    }, [startDate, endDate, interval]);
 
-            const data = await response.json();
+    const dashboardChartData = useMemo(() => ({
+        labels: ['Completed', 'Returned', 'Pending', 'Refund', 'Paid'],
+        datasets: [
+            {
+                label: 'Orders',
+                data: [
+                    dashboardData.completedCount,
+                    dashboardData.returnedCount,
+                    dashboardData.pendingCount,
+                    dashboardData.refundCount,
+                    dashboardData.paidCount,
+                ],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(54, 162, 235, 1)',
+                ],
+                borderWidth: 1,
+            },
+        ],
+    }), [dashboardData]);
 
-            if (response.ok) {
-                setUserInfo(updatedUserInfo);
-                setEditable(false);
-                setError('');
-            } else {
-                setError(data.message);
-            }
-        } catch (err) {
-            setError('An error occurred. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const orderStatsChartData = useMemo(() => ({
+        labels: orderStats.map(stat => stat._id),
+        datasets: [
+            {
+                label: 'Number of Orders',
+                data: orderStats.map(stat => stat.count),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1,
+            },
+        ],
+    }), [orderStats]);
 
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
-    if (error) {
-        return <p>{error}</p>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Dashboard - YoU are admin</h1>
-            {userInfo ? (
-                <div className="bg-white p-4 rounded shadow-md">
-                    <h2 className="text-xl font-semibold mb-2">User Info</h2>
-                    {['name', 'phone', 'address', 'memberNo', 'accountType', 'contactEmail'].map((field) => (
-                        <div key={field} className="mb-2">
-                            <label className="font-semibold capitalize">{field.replace(/([A-Z])/g, ' $1')}:</label>
-                            <input
-                                type="text"
-                                name={field}
-                                value={updatedUserInfo ? updatedUserInfo[field as keyof UserInfo] : ''}
-                                readOnly={!editable}
-                                onChange={handleInputChange}
-                                className={`w-full p-2 border rounded mt-1 ${editable ? 'bg-gray-100' : 'bg-white'}`}
+            <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white shadow-md rounded p-4">
+                    <h2 className="text-xl font-semibold">Completed Orders</h2>
+                    <p className="text-2xl">{dashboardData.completedCount}</p>
+                </div>
+                <div className="bg-white shadow-md rounded p-4">
+                    <h2 className="text-xl font-semibold">Returned Orders</h2>
+                    <p className="text-2xl">{dashboardData.returnedCount}</p>
+                </div>
+                <div className="bg-white shadow-md rounded p-4">
+                    <h2 className="text-xl font-semibold">Pending Orders</h2>
+                    <p className="text-2xl">{dashboardData.pendingCount}</p>
+                </div>
+                <div className="bg-white shadow-md rounded p-4">
+                    <h2 className="text-xl font-semibold">Refund Orders</h2>
+                    <p className="text-2xl">{dashboardData.refundCount}</p>
+                </div>
+                <div className="bg-white shadow-md rounded p-4">
+                    <h2 className="text-xl font-semibold">Paid Orders</h2>
+                    <p className="text-2xl">{dashboardData.paidCount}</p>
+                </div>
+            </div>
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
+                <div>
+                    <h2 className="text-xl font-semibold mb-4">Orders Overview</h2>
+                    <div className="px-4 py-2 mb-14"></div>
+                    <Bar data={dashboardChartData} />
+                </div>
+                <div>
+                    <h2 className="text-xl font-semibold mb-4">Order Stats</h2>
+                    <div className="flex space-x-4 mb-4">
+                        <button
+                            onClick={() => setInterval('day')}
+                            className={`px-4 py-2 rounded ${interval === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                            Day
+                        </button>
+                        <button
+                            onClick={() => setInterval('week')}
+                            className={`px-4 py-2 rounded ${interval === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                            Week
+                        </button>
+                        <button
+                            onClick={() => setInterval('month')}
+                            className={`px-4 py-2 rounded ${interval === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        >
+                            Month
+                        </button>
+                        <div>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                                Start Date
+                            </label>
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date: Date | null) => setStartDate(date!)}
+                                dateFormat="yyyy-MM-dd"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             />
                         </div>
-                    ))}
-                    {editable ? (
-                        <button
-                            onClick={handleSave}
-                            className="w-full py-2 px-4 bg-indigo-500 text-white rounded hover:bg-indigo-600 mt-4"
-                        >
-                            Save
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setEditable(true)}
-                            className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 mt-4"
-                        >
-                            Edit
-                        </button>
-                    )}
+                        <div>
+                            <label className="block text-gray-700 text-sm font-bold mb-2">
+                                End Date
+                            </label>
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date: Date | null) => setEndDate(date!)}
+                                dateFormat="yyyy-MM-dd"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            />
+                        </div>
+                    </div>
+                    <Line data={orderStatsChartData} />
                 </div>
-            ) : (
-                <p>User info not available.</p>
-            )}
+            </div>
         </div>
     );
 };
 
-export default Dashboard;
+export default AdminDashboard;
