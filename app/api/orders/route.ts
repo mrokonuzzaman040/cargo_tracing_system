@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
       payment,
       shippingMethod,
       estimatedFee,
-      orderNumber: orderNumber, // Add the generated order number
+      orderNumber: orderNumber,
     });
 
     await order.save();

@@ -10,8 +10,9 @@ const nextConfig = {
         domains: [ 'img.daisyui.com' ],
     },
     reactStrictMode: true,
-    experimental: {
-    },
+    source: '/api/:path*',
+    destination: '/404',
+    permanent: false,
 };
 
 export default nextConfig;
