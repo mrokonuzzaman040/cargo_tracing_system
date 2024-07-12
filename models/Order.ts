@@ -24,8 +24,9 @@ interface IOrder extends Document {
   shippingMethod: string;
   estimatedFee?: string;
   status: string;
-  orderNumber: string; // Add the order number field
+  orderNumber: string;
   createdAt: Date;
+  refundCalled: boolean; // Add the refundCalled field
 }
 
 const OrderSchema: Schema = new Schema({
@@ -57,13 +58,9 @@ const OrderSchema: Schema = new Schema({
   estimatedFee: { type: String },
   status: { type: String, default: "pending" },
   orderNumber: { type: String, required: true },
-  cancellationReason: { type: String },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  createdAt: { type: Date, default: Date.now },
+  refundCalled: { type: Boolean, default: false }, // Define the refundCalled field
 });
 
-const Order: Model<IOrder> =
-  mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);
-export default Order;
+export default mongoose.models.Order ||
+  mongoose.model<IOrder>("Order", OrderSchema);
