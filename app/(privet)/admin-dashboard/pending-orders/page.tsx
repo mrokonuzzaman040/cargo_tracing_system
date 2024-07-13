@@ -9,6 +9,7 @@ interface Order {
   _id: string;
   orderId: string;
   status: string;
+  orderNumber: string;
   createdAt: string;
   sender: {
     name: string;
@@ -98,7 +99,7 @@ const PendingOrders = () => {
         <tbody>
           {data.orders.map((order: Order) => (
             <tr key={order._id}>
-              <td className="py-2 px-4 border-b">{order.orderId}</td>
+              <td className="py-2 px-4 border-b">{order.orderNumber}</td>
               <td className="py-2 px-4 border-b">{dayjs(order.createdAt).format('YYYY-MM-DD HH:mm')}</td>
               <td className="py-2 px-4 border-b">{order.sender.name}</td>
               <td className="py-2 px-4 border-b">
