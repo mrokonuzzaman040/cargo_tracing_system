@@ -7,6 +7,7 @@ interface Order {
     status: string;
     estimatedFee: string;
     createdAt: string;
+    orderNumber: string;
 }
 
 const OrderHistory: React.FC = () => {
@@ -64,7 +65,7 @@ const OrderHistory: React.FC = () => {
                     <tbody>
                         {orders.map(order => (
                             <tr key={order._id}>
-                                <td className="py-2 px-4 border">{order._id}</td>
+                                <td className="py-2 px-4 border">{order.orderNumber}</td>
                                 <td className="py-2 px-4 border">{new Date(order.createdAt).toLocaleDateString()}</td>
                                 <td className="py-2 px-4 border uppercase">{order.status}</td>
                                 <td className="py-2 px-4 border">{order.estimatedFee}</td>
