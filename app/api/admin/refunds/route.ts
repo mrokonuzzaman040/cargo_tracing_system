@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
 
   try {
-    const orders = await Order.find({ status: "refund-request" })
+    const orders = await Order.find({ refundCalled: true })
       .skip((page - 1) * limit)
       .limit(limit);
     const totalOrders = await Order.countDocuments({

@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import dotenv from "dotenv";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 import { jwtVerify } from "jose";
-import { NextRequest } from "next/server";
 import User from "@/models/User";
 
 dotenv.config(); // Ensure environment variables are loaded
@@ -12,7 +11,10 @@ const SECRET_KEY = new TextEncoder().encode(
   process.env.NEXTAUTH_SECRET || "your_secret"
 );
 
-export async function GET(req: NextRequest, { params }: { params: any }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { orderNumber: string } }
+) {
   try {
     const token = req.cookies.get("token")?.value;
 
@@ -42,9 +44,9 @@ export async function GET(req: NextRequest, { params }: { params: any }) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const orderId = params.orderId;
+    const { orderNumber } = params;
 
-    const order = await Order.findOne({ _id: orderId, userId: user._id });
+    const order = await Order.findOne({ orderNumber, userId: user._id });
 
     if (!order) {
       return NextResponse.json({ message: "Order not found" }, { status: 404 });
