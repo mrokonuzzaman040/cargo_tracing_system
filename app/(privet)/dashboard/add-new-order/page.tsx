@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -28,6 +27,7 @@ type FormValues = {
     terms: boolean;
     estimatedFee?: string;
     goodsList: Array<GoodsFormValues & { imageUrl: string }>;
+    state?: string;
 };
 
 interface GoodsFormValues {
@@ -41,21 +41,49 @@ interface GoodsFormValues {
 }
 
 const Page: React.FC = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
     const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [goodsList, setGoodsList] = useState<Array<GoodsFormValues & { imageUrl: string }>>([]);
+    const [estimatedFee, setEstimatedFee] = useState<string | undefined>(undefined);
     const router = useRouter();
+
+    const watchedCountry = watch('country');
+    const watchedCity = watch('city');
+    const watchedState = watch('state');
+
+    useEffect(() => {
+        const fetchEstimatedFee = async () => {
+            if (watchedCountry && watchedCity && watchedState) {
+                try {
+                    const response = await axios.get(`/api/order/fare-cost`, {
+                        params: {
+                            country: watchedCountry,
+                            city: watchedCity,
+                            state: watchedState,
+                        },
+                    });
+                    setEstimatedFee(response.data.fareCost);
+                } catch (error) {
+                    console.error('Error fetching fare cost:', error);
+                    toast.error('Failed to fetch fare cost');
+                }
+            }
+        };
+
+        fetchEstimatedFee();
+    }, [watchedCountry, watchedCity, watchedState]);
 
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
         data.goodsList = goodsList;
+        data.estimatedFee = estimatedFee;
         try {
             const response = await axios.post('/api/orders', data);
             if (response.status === 201) {
                 toast.success('Order submitted successfully');
                 setTimeout(() => {
-                    router.push('dashboard/order-history');
+                    router.push('/dashboard/order-history');
                 }, 1500);
             }
         } catch (error) {
@@ -341,7 +369,7 @@ const Page: React.FC = () => {
                         type="text"
                         disabled
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        {...register('estimatedFee')}
+                        value={estimatedFee || ''}
                     />
                 </div>
 
@@ -353,7 +381,7 @@ const Page: React.FC = () => {
             </form>
 
             {/* <GoodsModal isOpen={isGoodsModalOpen} onRequestClose={() => setIsGoodsModalOpen(false)}
-                onAddGoods={addGoods} /> */}
+               onAddGoods={addGnoods} /> */}
         </div>
     );
 };

@@ -1,40 +1,49 @@
-import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-import User from "@/models/User";
+import { NextResponse, NextRequest } from "next/server";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
+import dotenv from "dotenv";
 
-const SECRET_KEY = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "your_secret"
-);
+dotenv.config();
 
-export async function validateRole(req: NextRequest, requiredRole: string) {
-  const token = req.cookies.get("token")?.value;
+const SECRET_KEY = process.env.NEXTAUTH_SECRET || "your_secret";
 
-  if (!token) {
-    return { status: 401, message: "Authorization token is missing" };
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY);
-
-    if (!payload || typeof payload !== "object" || !payload.email) {
-      return { status: 401, message: "Invalid token payload" };
-    }
-
     await dbConnect();
-    const user = await User.findOne({ email: payload.email });
+
+    const { email, password } = await req.json();
+
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return { status: 404, message: "User not found" };
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    if (user.role !== requiredRole) {
-      return { status: 403, message: "Forbidden: Insufficient role" };
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
-    return null; // No validation error
+    const token = jwt.sign({ email: user.email }, SECRET_KEY, {
+      expiresIn: "1h",
+    });
+
+    return NextResponse.json({ token }, { status: 200 });
   } catch (error) {
-    console.error("Token validation error:", error);
-    return { status: 401, message: "Invalid token" };
+    console.error("Error during authentication:", error);
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { message: "An unknown error occurred" },
+        { status: 500 }
+      );
+    }
   }
 }
