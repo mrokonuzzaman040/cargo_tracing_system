@@ -1,16 +1,19 @@
 import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
-import {validateUser} from "@/lib/validator/auth";
+import { validateRole } from "@/lib/validator/auth";
+import User from "@/models/User";
 
 export async function POST(req: NextRequest) {
   try {
-    const userValidation = await validateUser(req);
+    const userValidation = await validateRole(req, "user");
     if (userValidation instanceof NextResponse) {
       return userValidation;
     }
 
-    const { user } = userValidation;
+    await dbConnect();
+
+    const user = await User.findOne({ email: req.cookies.get("token")?.value });
 
     const {
       senderName,
