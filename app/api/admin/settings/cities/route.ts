@@ -2,10 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/mongodb";
 import City from "@/models/City";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+type HandlerType = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+
+const handler: HandlerType = async (req, res) => {
   await dbConnect();
 
   if (req.method === "GET") {
@@ -20,4 +19,6 @@ export default async function handler(
   } else {
     res.status(405).json({ message: "Method not allowed" });
   }
-}
+};
+
+export default handler;

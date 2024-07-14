@@ -1,47 +1,16 @@
 import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
-import { jwtVerify } from "jose";
-import User from "@/models/User";
-import dotenv from "dotenv";
-
-dotenv.config(); // Ensure environment variables are loaded
-
-const SECRET_KEY = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || "your_secret"
-);
-
-export const dynamic = "force-dynamic";
+import {validateUser} from "@/lib/validator/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const token = req.cookies.get("token")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { message: "Authorization token is missing" },
-        { status: 401 }
-      );
+    const userValidation = await validateUser(req);
+    if (userValidation instanceof NextResponse) {
+      return userValidation;
     }
 
-    const { payload } = await jwtVerify(token, SECRET_KEY);
-
-    if (!payload || typeof payload !== "object" || !payload.email) {
-      return NextResponse.json(
-        { message: "Invalid token payload" },
-        { status: 401 }
-      );
-    }
-
-    const email = payload.email as string;
-
-    await dbConnect();
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
-    }
+    const { user } = userValidation;
 
     const {
       senderName,
@@ -61,7 +30,6 @@ export async function POST(req: NextRequest) {
       payment,
       shippingMethod,
       estimatedFee,
-      goodsList,
     } = await req.json();
 
     const order = new Order({
@@ -87,14 +55,12 @@ export async function POST(req: NextRequest) {
       payment,
       shippingMethod,
       estimatedFee,
-      goodsList,
     });
 
     await order.save();
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (error) {
-    console.error("Error creating order:", error);
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     } else {
