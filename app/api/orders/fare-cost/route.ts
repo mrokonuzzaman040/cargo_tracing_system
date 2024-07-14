@@ -1,33 +1,40 @@
-// File: pages/api/fare-cost.ts
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import FareCost from "@/models/FareCost";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export const dynamic = "force-dynamic";
+
+// Function to handle GET requests
+export async function GET(req: NextRequest) {
   await dbConnect();
 
-  const { country, city, state } = req.query;
+  const { searchParams } = new URL(req.url);
+  const country = searchParams.get("country");
+  const city = searchParams.get("city");
+  const state = searchParams.get("state");
 
   if (!country || !city || !state) {
-    return res
-      .status(400)
-      .json({ message: "Country, city, and state are required" });
+    return NextResponse.json(
+      { message: "Country, city, and state are required" },
+      { status: 400 }
+    );
   }
 
   try {
     const fareCost = await FareCost.findOne({ country, city, state });
 
     if (!fareCost) {
-      return res
-        .status(404)
-        .json({ message: "Fare cost not found for the selected location" });
+      return NextResponse.json(
+        { message: "Fare cost not found for the selected location" },
+        { status: 404 }
+      );
     }
 
-    return res.status(200).json({ fareCost: fareCost.cost });
+    return NextResponse.json({ fareCost: fareCost.cost }, { status: 200 });
   } catch (error) {
-    return res.status(500).json({ message: "Error fetching fare cost", error });
+    return NextResponse.json(
+      { message: "Error fetching fare cost", error },
+      { status: 500 }
+    );
   }
 }

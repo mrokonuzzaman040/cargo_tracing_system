@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
 
 export const dynamic = "force-dynamic";
 
 export async function PUT(
-  req: { json: () => PromiseLike<{ reason: any }> | { reason: any } },
-  { params }: any
+  req: NextRequest,
+  { params }: { params: { orderId: string } }
 ) {
   const { orderId } = params;
   const { reason } = await req.json();

@@ -1,25 +1,53 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import ShippingMethod from "@/models/ShippingMethod";
+import { validateRole } from "@/lib/validator/auth";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export const dynamic = "force-dynamic";
+
+export async function GET(req: NextRequest) {
   await dbConnect();
 
-  if (req.method === "POST") {
-    const { method } = req.body;
+  const roleValidation = await validateRole(req, "admin");
+  if (roleValidation) {
+    return NextResponse.json(
+      { message: roleValidation.message },
+      { status: roleValidation.status }
+    );
+  }
 
-    try {
-      const shippingMethod = new ShippingMethod({ method });
-      await shippingMethod.save();
+  try {
+    const shippingMethods = await ShippingMethod.find();
+    return NextResponse.json({ shippingMethods }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error fetching shipping methods", error },
+      { status: 500 }
+    );
+  }
+}
 
-      res.status(201).json(shippingMethod);
-    } catch (error) {
-      res.status(500).json({ message: "Error adding shipping method", error });
-    }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
+export async function POST(req: NextRequest) {
+  await dbConnect();
+
+  const roleValidation = await validateRole(req, "admin");
+  if (roleValidation) {
+    return NextResponse.json(
+      { message: roleValidation.message },
+      { status: roleValidation.status }
+    );
+  }
+
+  const { name, description } = await req.json();
+
+  try {
+    const shippingMethod = new ShippingMethod({ name, description });
+    await shippingMethod.save();
+    return NextResponse.json({ shippingMethod }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error adding shipping method", error },
+      { status: 500 }
+    );
   }
 }

@@ -1,24 +1,53 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import City from "@/models/City";
+import { validateRole } from "@/lib/validator/auth";
 
-type HandlerType = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+export const dynamic = "force-dynamic";
 
-const handler: HandlerType = async (req, res) => {
+export async function GET(req: NextRequest) {
   await dbConnect();
 
-  if (req.method === "GET") {
-    const { country } = req.query;
-
-    try {
-      const cities = await City.find({ country });
-      res.status(200).json(cities);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching cities", error });
-    }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
+  const roleValidation = await validateRole(req, "admin");
+  if (roleValidation) {
+    return NextResponse.json(
+      { message: roleValidation.message },
+      { status: roleValidation.status }
+    );
   }
-};
 
-export default handler;
+  try {
+    const cities = await City.find();
+    return NextResponse.json({ cities }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error fetching cities", error },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  await dbConnect();
+
+  const roleValidation = await validateRole(req, "admin");
+  if (roleValidation) {
+    return NextResponse.json(
+      { message: roleValidation.message },
+      { status: roleValidation.status }
+    );
+  }
+
+  const { name, country } = await req.json();
+
+  try {
+    const city = new City({ name, country });
+    await city.save();
+    return NextResponse.json({ city }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error adding city", error },
+      { status: 500 }
+    );
+  }
+}
