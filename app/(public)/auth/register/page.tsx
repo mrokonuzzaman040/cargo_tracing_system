@@ -169,7 +169,7 @@ const Register = () => {
                         </form>
                         {message && <p className="mt-4 text-red-500">{message}</p>}
                         <div className="text-center mt-4">
-                            <a href="/auth/signin" className="text-blue-500">I am a Member</a>
+                            <a href="/" className="text-blue-500">I am a Member</a>
                         </div>
                     </div>
                     <div className="w-full md:w-1/3 flex items-center justify-center">
