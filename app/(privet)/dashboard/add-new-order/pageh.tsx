@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from 'react';
 import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import axios from 'axios';
@@ -78,7 +78,6 @@ const Page: React.FC = () => {
         setLoading(true);
         data.goodsList = goodsList;
         data.estimatedFee = estimatedFee;
-        console.log("Data: ", data)
         try {
             const response = await axios.post('/api/orders', data);
             if (response.status === 201) {
@@ -105,10 +104,6 @@ const Page: React.FC = () => {
             </p>;
         }
         return null;
-    };
-
-    const addGoods = (goods: GoodsFormValues, imageUrl: string) => {
-        setGoodsList([...goodsList, { ...goods, imageUrl }]);
     };
 
     return (
@@ -287,7 +282,7 @@ const Page: React.FC = () => {
                                         <td className="py-2 px-4 border">{goods.declaredValue}</td>
                                         <td className="py-2 px-4 border">{goods.count}</td>
                                         <td className="py-2 px-4 border">
-                                            <img src={goods.imageUrl} alt={goods.itemName} className="h-16" />
+                                            <img src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} className="h-16" />
                                         </td>
                                     </tr>
                                 ))}
@@ -385,13 +380,8 @@ const Page: React.FC = () => {
                 </div>
             </form>
 
-            {isGoodsModalOpen && (
-                <GoodsModal
-                    isOpen={isGoodsModalOpen}
-                    onRequestClose={() => setIsGoodsModalOpen(false)}
-                    onAddGoods={addGoods}
-                />
-            )}
+            {/* <GoodsModal isOpen={isGoodsModalOpen} onRequestClose={() => setIsGoodsModalOpen(false)}
+               onAddGoods={addGnoods} /> */}
         </div>
     );
 };

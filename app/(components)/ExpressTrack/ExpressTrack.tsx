@@ -16,11 +16,17 @@ const ExpressTrack = () => {
                 </button>
             </div>
 
-            {/* Why choose IAExp? Section */}
+            {/* Why choose Sosep Express? Section */}
             <div className="w-full lg:w-2/4 p-4 border-gray-300">
-                <h2 className="text-xl font-bold mb-4">Why choose IAExp?</h2>
-                <p className="mb-4">
-                    We established in 2014, relying on the special relation with Ethiopian Airlines and Aeromexico Airlines, developing the air transportation rapidly. At present, setting up 23 branches in Africa & South America. We are committed to building an efficient brand, providing you with high quantity service. Focusing on the fields of international Air Express, international Air Transportation, International Logistics Projects, etc.
+                <h2 className="text-xl font-bold mb-4">Why choose Sosep Express?</h2>
+                <p className="mb-4 p-2">
+                    <p>
+                        At Sosep Express, we prioritize fast, reliable air transport thanks to our strong airline partnerships. We`&apos;`ve rapidly expanded to 23 branches across Africa, demonstrating our commitment to the region. We are dedicated to efficiency and quality, ensuring our services meet the specific needs of our customers. Our specialties include Air Express International, International Air Transport, and management of complex International Logistics Projects.
+                    </p>
+                    <br />
+                    <p>
+                        Choose Sosep Express for superior air transport and logistics solutions tailored to your requirements. Contact us to see how we can support your logistics goals efficiently and reliably.
+                    </p>
                 </p>
                 <div className="mb-4">
                     <div className="flex items-start mb-2">
@@ -29,7 +35,7 @@ const ExpressTrack = () => {
                         </div>
                         <div>
                             <h3 className="font-bold">Speed</h3>
-                            <p className="text-sm">Unbeatable Service time, IAExp is the fastest solution from China to Africa & South America.</p>
+                            <p className="text-sm">Unbeatable Service time, Sosep Express is the fastest solution from China to Africa & South America.</p>
                         </div>
                     </div>
                     <div className="flex items-start mb-2">
@@ -38,7 +44,7 @@ const ExpressTrack = () => {
                         </div>
                         <div>
                             <h3 className="font-bold">Flexibility</h3>
-                            <p className="text-sm">IAExp offers a flexible, first class delivery service that is tailored to your individual customer needs.</p>
+                            <p className="text-sm">Sosep Express offers a flexible, first class delivery service that is tailored to your individual customer needs.</p>
                         </div>
                     </div>
                     <div className="flex items-start">

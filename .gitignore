@@ -6,6 +6,10 @@
 .pnp.js
 .yarn/install-state.gz
 
+# folders
+/migrations
+/syncSchemas.js
+
 # testing
 /coverage
 
