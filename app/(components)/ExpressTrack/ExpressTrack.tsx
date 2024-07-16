@@ -1,7 +1,29 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 const ExpressTrack = () => {
+    const [orderNumber, setOrderNumber] = useState('');
+    const [orderStatus, setOrderStatus] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    // track order
+    const handleTrackOrder = async () => {
+        setLoading(true);
+        setError(null);
+        setOrderStatus(null);
+
+        try {
+            const response = await axios.get(`/api/orders/track/${orderNumber}`);
+            setOrderStatus(response.data.status);
+        } catch (error) {
+            setError('Failed to fetch order status');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="container mx-auto max-w-7xl  my-8 p-4 flex flex-wrap">
             {/* Express Track Section */}
@@ -11,15 +33,29 @@ const ExpressTrack = () => {
                     className="w-full h-32 p-2 border rounded mb-4"
                     placeholder="Enter tracking details"
                 ></textarea>
-                <button className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Inquiry
+                <button
+                    onClick={handleTrackOrder}
+                    className="bg-blue-500 text-white py-2 px-4 rounded"
+                    disabled={loading}
+                >
+                    Track Order
                 </button>
+
+                {loading && <p>Loading...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+
+                {orderStatus && (
+                    <div className="mt-4">
+                        <h3 className="text-xl font-semibold">Order Status</h3>
+                        <p>{orderStatus}</p>
+                    </div>
+                )}
             </div>
 
             {/* Why choose Sosep Express? Section */}
             <div className="w-full lg:w-2/4 p-4 border-gray-300">
                 <h2 className="text-xl font-bold mb-4">Why choose Sosep Express?</h2>
-                <p className="mb-4 p-2">
+                <div className="mb-4 p-2">
                     <p>
                         At Sosep Express, we prioritize fast, reliable air transport thanks to our strong airline partnerships. We`&apos;`ve rapidly expanded to 23 branches across Africa, demonstrating our commitment to the region. We are dedicated to efficiency and quality, ensuring our services meet the specific needs of our customers. Our specialties include Air Express International, International Air Transport, and management of complex International Logistics Projects.
                     </p>
@@ -27,7 +63,7 @@ const ExpressTrack = () => {
                     <p>
                         Choose Sosep Express for superior air transport and logistics solutions tailored to your requirements. Contact us to see how we can support your logistics goals efficiently and reliably.
                     </p>
-                </p>
+                </div>
                 <div className="mb-4">
                     <div className="flex items-start mb-2">
                         <div className="mr-2">

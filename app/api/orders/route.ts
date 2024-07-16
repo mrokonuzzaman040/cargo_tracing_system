@@ -176,12 +176,7 @@ export async function POST(req: NextRequest) {
       goodsList,
     } = await req.json();
 
-    if (!goodsList || !Array.isArray(goodsList)) {
-      return NextResponse.json(
-        { message: "Invalid or missing goods list" },
-        { status: 400 }
-      );
-    }
+    console.log("Goods List:", goodsList); // Log the goodsList to check if it is received correctly
 
     const orderNumber = generateOrderNumber();
 
@@ -208,13 +203,9 @@ export async function POST(req: NextRequest) {
       payment,
       shippingMethod,
       estimatedFee,
+      goodsList, // Ensure goodsList is included here
       orderNumber: orderNumber,
-      goodsList: goodsList,
-      status: "pending",
-      refundCalled: false,
     });
-
-    console.log("Order created:", order);
 
     await order.save();
 
