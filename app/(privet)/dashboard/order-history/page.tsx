@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import ViewModal from '@/app/(components)/view/ViewModal';
 
 interface Order {
     _id: string;
@@ -8,6 +9,30 @@ interface Order {
     estimatedFee: string;
     createdAt: string;
     orderNumber: string;
+    goodsList: Goods[];
+    receiver: Receiver;
+    [key: string]: any;
+}
+
+interface Goods {
+    domesticWb: string;
+    natureOfGoods: string;
+    itemName: string;
+    weight: string;
+    declaredValue: string;
+    count: string;
+    imageUrl: string;
+}
+
+interface Receiver {
+    name: string;
+    phonePrefix: string;
+    phone: string;
+    country: string;
+    city: string;
+    street: string;
+    district?: string;
+    company?: string;
 }
 
 const OrderHistory: React.FC = () => {
@@ -16,6 +41,8 @@ const OrderHistory: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [cancelOrderId, setCancelOrderId] = useState<string | null>(null);
     const [cancelReason, setCancelReason] = useState<string>('');
+    const [viewOrder, setViewOrder] = useState<Order | null>(null);
+    const [sortConfig, setSortConfig] = useState<{ key: string, direction: string } | null>(null);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -43,6 +70,30 @@ const OrderHistory: React.FC = () => {
         }
     };
 
+    const handleSort = (key: string) => {
+        let direction = 'ascending';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedOrders = React.useMemo(() => {
+        let sortableOrders = [...orders];
+        if (sortConfig !== null) {
+            sortableOrders.sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableOrders;
+    }, [orders, sortConfig]);
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
@@ -55,15 +106,15 @@ const OrderHistory: React.FC = () => {
                 <table className="min-w-full border-collapse border">
                     <thead>
                         <tr className="bg-blue-500 text-white">
-                            <th className="py-2 px-4 border">Order ID</th>
-                            <th className="py-2 px-4 border">Date</th>
-                            <th className="py-2 px-4 border">Status</th>
-                            <th className="py-2 px-4 border">Total</th>
+                            <th className="py-2 px-4 border cursor-pointer" onClick={() => handleSort('orderNumber')}>Order ID</th>
+                            <th className="py-2 px-4 border cursor-pointer" onClick={() => handleSort('createdAt')}>Date</th>
+                            <th className="py-2 px-4 border cursor-pointer" onClick={() => handleSort('status')}>Status</th>
+                            <th className="py-2 px-4 border cursor-pointer" onClick={() => handleSort('estimatedFee')}>Total</th>
                             <th className="py-2 px-4 border">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map(order => (
+                        {sortedOrders.map(order => (
                             <tr key={order._id}>
                                 <td className="py-2 px-4 border">{order.orderNumber}</td>
                                 <td className="py-2 px-4 border">{new Date(order.createdAt).toLocaleDateString()}</td>
@@ -78,7 +129,12 @@ const OrderHistory: React.FC = () => {
                                             Cancel
                                         </button>
                                     )}
-                                    <button className="bg-blue-500 text-white py-1 px-3 rounded">View</button>
+                                    <button
+                                        className="bg-blue-500 text-white py-1 px-3 rounded"
+                                        onClick={() => setViewOrder(order)}
+                                    >
+                                        View
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -114,6 +170,15 @@ const OrderHistory: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {viewOrder && (
+                <ViewModal
+                    isOpen={!!viewOrder}
+                    onRequestClose={() => setViewOrder(null)}
+                    goodsList={viewOrder.goodsList}
+                    receiver={viewOrder.receiver}
+                />
             )}
         </div>
     );
