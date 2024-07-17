@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ViewModal from '@/app/(components)/view/ViewModal';
 
 interface Order {
     _id: string;
@@ -31,12 +32,24 @@ interface Order {
     createdAt: string;
     refundCalled: boolean;
     orderNumber: string;
+    goodsList: Goods[];
+}
+
+interface Goods {
+    domesticWb: string;
+    natureOfGoods: string;
+    itemName: string;
+    weight: string;
+    declaredValue: string;
+    count: string;
+    imageUrl: string;
 }
 
 const ReturnedOrders: React.FC = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [viewOrder, setViewOrder] = useState<Order | null>(null);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -98,7 +111,12 @@ const ReturnedOrders: React.FC = () => {
                                 <td className="py-2 px-4 border uppercase">{order.status}</td>
                                 <td className="py-2 px-4 border">{order.estimatedFee}</td>
                                 <td className="py-2 px-4 border">
-                                    <button className="bg-blue-500 text-white py-1 px-3 rounded">View</button>
+                                    <button
+                                        className="bg-blue-500 text-white py-1 px-3 rounded"
+                                        onClick={() => setViewOrder(order)}
+                                    >
+                                        View
+                                    </button>
                                 </td>
                                 <td className="py-2 px-4 border">
                                     {order.status === 'returned' && !order.refundCalled && (
@@ -115,6 +133,15 @@ const ReturnedOrders: React.FC = () => {
                         ))}
                     </tbody>
                 </table>
+            )}
+
+            {viewOrder && (
+                <ViewModal
+                    isOpen={!!viewOrder}
+                    onRequestClose={() => setViewOrder(null)}
+                    goodsList={viewOrder.goodsList}
+                    receiver={viewOrder.receiver}
+                />
             )}
         </div>
     );

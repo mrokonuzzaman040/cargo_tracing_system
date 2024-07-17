@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface Goods {
     domesticWb: string;
@@ -66,7 +67,12 @@ const ViewModal: React.FC<ViewModalProps> = ({ isOpen, onRequestClose, goodsList
                                     <td className="py-2 px-4 border">{goods.declaredValue}</td>
                                     <td className="py-2 px-4 border">{goods.count}</td>
                                     <td className="py-2 px-4 border">
-                                        <img src={goods.imageUrl} alt={goods.itemName} className="h-16" />
+                                        <Image
+                                            src={goods.imageUrl}
+                                            width={50}
+                                            height={50}
+                                            alt={goods.itemName}
+                                        />
                                     </td>
                                 </tr>
                             ))}

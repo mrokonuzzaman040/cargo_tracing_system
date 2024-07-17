@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import GoodsModal from './GoodsModal';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type FormValues = {
     senderName: string;
@@ -282,7 +283,8 @@ const Page: React.FC = () => {
                                         <td className="py-2 px-4 border">{goods.declaredValue}</td>
                                         <td className="py-2 px-4 border">{goods.count}</td>
                                         <td className="py-2 px-4 border">
-                                            <img src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} className="h-16" />
+                                            {/* <img src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} className="h-16" /> */}
+                                            <Image src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} width={50} height={50} />
                                         </td>
                                     </tr>
                                 ))}

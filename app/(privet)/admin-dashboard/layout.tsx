@@ -2,6 +2,7 @@ import React from 'react';
 import "../globals.css";
 import PrelineScript from '@/app/(components)/PrelineScript';
 import { about, logo, question, rate } from '@/var';
+import Image from 'next/image';
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -27,7 +28,7 @@ export default function Layout({
                     <nav className="flex basis-full items-center w-full mx-auto px-4 sm:px-6" aria-label="Global">
                         <div className="me-5 lg:me-0 lg:hidden">
                             <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Preline">
-                                <img className="w-28 h-auto" src={logo} alt="Logo" />
+                                <Image src={logo} width={120} height={40} alt="Sosep Express Logo" />
                             </a>
                         </div>
 
@@ -58,7 +59,7 @@ export default function Layout({
 
                                 <div className="hs-dropdown [--placement:bottom-right] relative inline-flex">
                                     <button id="hs-dropdown-with-header" type="button" className="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700">
-                                        <img className="inline-block size-[38px] rounded-full ring-2 ring-white dark:ring-neutral-800" src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80" alt="Image Description" />
+                                        <Image className="inline-block size-[38px] rounded-full ring-2 ring-white dark:ring-neutral-800" src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80" alt="Image Description" width={80} height={80} />
                                     </button>
 
                                     <div className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-2 dark:bg-neutral-900 dark:border dark:border-neutral-700" aria-labelledby="hs-dropdown-with-header">
@@ -124,7 +125,7 @@ export default function Layout({
  ">
                     <div className="px-8 pt-4">
                         <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Logo">
-                            <img className="w-28 h-auto" src={logo} alt="Logo" />
+                            <Image src={logo} width={120} height={40} alt="Sosep Express Logo" />
                         </a>
                     </div>
 
@@ -270,15 +271,18 @@ export default function Layout({
                             </a></li>
 
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" /> */}
+                                <Image src={rate} width={24} height={24} alt="Image Description" />
                                 Rates
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" /> */}
+                                <Image src={question} width={24} height={24} alt="Image Description" />
                                 How to order
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" /> */}
+                                <Image src={about} width={24} height={24} alt="Image Description" />
                                 About us
                             </a></li>
                         </ul>

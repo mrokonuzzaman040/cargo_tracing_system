@@ -4,6 +4,7 @@ import PrelineScript from '@/app/(components)/PrelineScript';
 import { about, logo, question, rate } from '@/var';
 import { ToastContainer } from 'react-toastify';
 import Logout from '@/app/(components)/Logout';
+import Image from 'next/image';
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -29,7 +30,8 @@ export default function Layout({
                     <nav className="flex basis-full items-center w-full mx-auto px-4 sm:px-6" aria-label="Global">
                         <div className="me-5 lg:me-0 lg:hidden">
                             <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Preline">
-                                <img className="w-28 h-auto" src={logo} alt="Logo" />
+                                {/* <img className="w-28 h-auto" src={logo} alt="Logo" /> */}
+                                <Image src={logo} alt="Logo" width={112} height={28} />
                             </a>
                         </div>
 
@@ -90,7 +92,8 @@ export default function Layout({
  ">
                     <div className="px-8 pt-4">
                         <a className="flex-none rounded-xl text-xl inline-block font-semibold focus:outline-none focus:opacity-80" href="/dashboard" aria-label="Logo">
-                            <img className="w-28 h-auto" src={logo} alt="Logo" />
+                            {/* <img className="w-28 h-auto" src={logo} alt="Logo" /> */}
+                            <Image src={logo} alt="Logo" width={112} height={28} />
                         </a>
                     </div>
 
@@ -264,15 +267,18 @@ export default function Layout({
                                 Tracking
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="/dashboard/rate">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" /> */}
+                                <Image src={rate} alt="Rate" width={24} height={24} />
                                 Rates
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="/dashboard/how-to-order">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" /> */}
+                                <Image src={question} alt="Question" width={24} height={24} />
                                 How to order
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="/dashboard/about-us">
-                                <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" />
+                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" /> */}
+                                <Image src={about} alt="About" width={24} height={24} />
                                 About us
                             </a></li>
                         </ul>
