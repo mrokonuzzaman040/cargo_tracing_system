@@ -51,7 +51,7 @@ const TrackOrder: React.FC = () => {
             {orderStatus && (
                 <div className="mt-4">
                     <h3 className="text-xl font-semibold">Order Status</h3>
-                    <p>{orderStatus}</p>
+                    <p className='uppercase'>{orderStatus}</p>
                 </div>
             )}
         </div>
