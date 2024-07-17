@@ -61,7 +61,7 @@ const OrderHistory: React.FC = () => {
 
     const handleCancelOrder = async (orderId: string) => {
         try {
-            const response = await axios.put(`/api/orders/${orderId}/cancel`, { reason: cancelReason });
+            await axios.put(`/api/orders/${orderId}/cancel`, { reason: cancelReason });
             setOrders(orders.map(order => order._id === orderId ? { ...order, status: 'canceled' } : order));
             setCancelOrderId(null);
             setCancelReason('');

@@ -72,6 +72,9 @@ const ViewModal: React.FC<ViewModalProps> = ({ isOpen, onRequestClose, goodsList
                                             width={50}
                                             height={50}
                                             alt={goods.itemName}
+                                            quality={40}
+                                            loader={({ src }) => src
+                                        }
                                         />
                                     </td>
                                 </tr>
