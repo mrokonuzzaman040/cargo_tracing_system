@@ -4,6 +4,8 @@ import Order from "@/models/Order";
 import dayjs from "dayjs";
 import { validateRole } from "@/lib/validator/auth";
 
+export const dynamic = "force-dynamic"; // Add this line to mark the route as dynamic
+
 export async function GET(req: NextRequest) {
   try {
     const adminValidation = await validateRole(req, "admin");
