@@ -368,7 +368,6 @@ const Page: React.FC = () => {
                                 className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.deliveryMethod && 'border-red-500'}`}
                                 {...register('deliveryMethod', { required: 'Delivery method is required' })}
                             >
-                                <option value="">Select Delivery Method</option>
                                 <option value="door-to-door">Door to Door</option>
                                 <option value="door-to-port">Door to Port</option>
                                 <option value="port-to-port">Port to Port</option>
@@ -408,7 +407,7 @@ const Page: React.FC = () => {
                                 {...register('shippingMethod', { required: 'Shipping method is required' })}
                             >
                                 <option value="">Select Shipping Method</option>
-                                <option value="air">Air</option>
+                                <option value="air">Air Express</option>
                                 <option value="sea">Sea</option>
                                 <option value="land">Land</option>
                             </select>
