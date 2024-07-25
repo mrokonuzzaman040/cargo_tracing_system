@@ -52,6 +52,9 @@ const Slider = () => {
                 } else {
                     setError('Login failed. No token received.');
                 }
+            } else if (response.status === 401) {
+                // Redirect to verify page if user is not verified
+                router.push('/verify');
             } else {
                 setError(data.message || 'Login failed');
             }

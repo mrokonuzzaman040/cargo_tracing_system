@@ -37,6 +37,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (user.isVerified === false) {
+      return NextResponse.json(
+        { message: "User not verified" },
+        { status: 401 }
+      );
+    }
+
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
       SECRET_KEY,
@@ -45,14 +52,11 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    // Save the token in the database
-    user.token = token;
-    await user.save();
-
     const response = NextResponse.json({
       message: "Login successful",
       token: token,
     });
+
     response.cookies.set("token", token, {
       path: "/",
       httpOnly: true,
