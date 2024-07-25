@@ -42,16 +42,13 @@ const PendingOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const ordersPerPage = 10;
+  const [loading, setLoading] = useState(false);
 
   const { data, error, isLoading } = useQuery(
     ['pendingOrders', currentPage],
     () => fetchPendingOrders(currentPage, ordersPerPage),
     { keepPreviousData: true }
   );
-
-  const handleViewDetails = (order: Order) => {
-    setSelectedOrder(order);
-  };
 
   const handleStatusChange = (orderId: string, status: string) => {
     setStatusUpdates((prev) => ({ ...prev, [orderId]: status }));
@@ -64,6 +61,7 @@ const PendingOrders = () => {
 
   const confirmStatusChange = async () => {
     if (!selectedOrder) return;
+    setLoading(true);
     try {
       await axios.put(`/api/admin/orders/${selectedOrder._id}/status`, { status: statusUpdates[selectedOrder._id] }, { withCredentials: true });
       queryClient.invalidateQueries('pendingOrders');
@@ -72,8 +70,11 @@ const PendingOrders = () => {
       setSelectedOrder(null);
     } catch (err) {
       console.error('Error updating order status:', err);
+    } finally {
+      setLoading(false);
     }
   };
+
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -107,7 +108,7 @@ const PendingOrders = () => {
               </td>
               <td className="py-2 px-4 border-b">
                 <select
-                  value={statusUpdates[order._id] || ''}
+                  value={statusUpdates[order._id] || order.status}
                   onChange={(e) => handleStatusChange(order._id, e.target.value)}
                   className="block w-full p-2 border rounded"
                 >
@@ -167,8 +168,9 @@ const PendingOrders = () => {
               <button
                 onClick={confirmStatusChange}
                 className="bg-blue-500 text-white py-2 px-4 rounded"
+                disabled={loading}
               >
-                Confirm
+                {loading ? 'Updating...' : 'Confirm'}
               </button>
             </div>
           </div>

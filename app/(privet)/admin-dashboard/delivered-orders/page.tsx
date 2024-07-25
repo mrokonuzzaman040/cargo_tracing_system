@@ -65,8 +65,8 @@ const DeliveredOrders = () => {
     const confirmStatusChange = async () => {
         if (!selectedOrder) return;
         try {
-            await axios.put('/api/admin/orders/update', { orderId: selectedOrder._id, status: statusUpdates[selectedOrder._id] }, { withCredentials: true });
-            queryClient.invalidateQueries('deliveredOrders');
+            await axios.put(`/api/admin/orders/${selectedOrder._id}/status`, { status: statusUpdates[selectedOrder._id] }, { withCredentials: true });
+            queryClient.invalidateQueries('pendingOrders');
             setShowConfirmation(false);
             setStatusUpdates((prev) => ({ ...prev, [selectedOrder._id]: '' }));
             setSelectedOrder(null);

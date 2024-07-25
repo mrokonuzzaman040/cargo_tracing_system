@@ -1,4 +1,3 @@
-// app/api/admin/orders/[orderId]/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Order from "@/models/Order";
@@ -8,7 +7,10 @@ import { sendEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
-export async function PUT(req: NextRequest) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { orderId: string } }
+) {
   await dbConnect();
 
   const roleValidation = await validateRole(req, "admin");
@@ -19,7 +21,7 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const orderId = req.nextUrl.searchParams.get("orderId");
+  const { orderId } = params;
   const { status } = await req.json();
 
   try {
