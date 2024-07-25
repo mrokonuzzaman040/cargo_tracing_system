@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // update the query to get the page and limit from the query string
   const page = parseInt(req.nextUrl.searchParams.get("page") || "1");
   const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10");
 
