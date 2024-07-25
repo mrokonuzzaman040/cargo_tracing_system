@@ -4,6 +4,7 @@ import TopNavbar from '../(components)/TopNavbar/TopNavbar';
 import Footer from '../(components)/Footer/Footer';
 import Navbar from '../(components)/Navbar/Navbar';
 import PrelineScript from '../(components)/PrelineScript';
+import { Analytics } from "@vercel/analytics/react"
 
 
 export const metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({
         </div>
       </body>
       <PrelineScript />
+      <Analytics />
     </html>
   );
 }
