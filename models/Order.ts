@@ -35,7 +35,8 @@ interface IOrder extends Document {
     imageUrl: string;
   }[];
   createdAt: Date;
-  refundCalled: boolean; // Add the refundCalled field
+  refundCalled: boolean; 
+  paymentStatus: string;
 }
 
 const OrderSchema: Schema = new Schema({
@@ -79,7 +80,8 @@ const OrderSchema: Schema = new Schema({
     },
   ],
   createdAt: { type: Date, default: Date.now },
-  refundCalled: { type: Boolean, default: false }, // Define the refundCalled field
+  refundCalled: { type: Boolean, default: false },
+  paymentStatus: { type: String, default: "Pending" },
 });
 
 export default mongoose.models.Order ||

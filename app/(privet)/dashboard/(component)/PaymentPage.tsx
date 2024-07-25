@@ -4,7 +4,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe('YOUR_STRIPE_PUBLIC_KEY');
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
 const PaymentPage = ({ order }: { order: any }) => {
     const stripe = useStripe();
@@ -31,7 +31,17 @@ const PaymentPage = ({ order }: { order: any }) => {
             console.error(error);
         } else {
             console.log(paymentMethod);
-            // Send payment method to your server to create a charge
+            await fetch('/api/stripe/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: order.estimatedFee * 100, // amount in cents
+                    orderId: order.id,
+                    paymentMethodId: paymentMethod.id,
+                }),
+            });
         }
     };
 
@@ -41,7 +51,7 @@ const PaymentPage = ({ order }: { order: any }) => {
 
             <div className="mb-6">
                 <h3 className="text-xl font-semibold mb-4">Pay with PayPal</h3>
-                <PayPalScriptProvider options={{ clientId: 'YOUR_PAYPAL_CLIENT_ID' }}>
+                <PayPalScriptProvider options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID! }}>
                     <PayPalButtons
                         style={{ layout: 'vertical' }}
                         createOrder={(data, actions) => {
@@ -57,13 +67,18 @@ const PaymentPage = ({ order }: { order: any }) => {
                                 intent: 'CAPTURE'
                             });
                         }}
-                        onApprove={(data, actions) => {
+                        onApprove={async (data, actions) => {
                             if (!actions.order) {
                                 return Promise.reject(new Error('Order action is undefined'));
                             }
-                            return actions.order.capture().then(function (details) {
-                                console.log(details);
-                                // Send details to your server to save the transaction
+                            const details = await actions.order.capture();
+                            console.log(details);
+                            await fetch('/api/paypal/payment', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ orderId: order.id }),
                             });
                         }}
                     />
