@@ -3,97 +3,45 @@ import React, { useState, useEffect } from 'react';
 import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import GoodsModal from './GoodsModal';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-
-type FormValues = {
-    senderName: string;
-    senderPhonePrefix: string;
-    senderPhone: string;
-    senderAddress: string;
-    receiverName: string;
-    receiverPhonePrefix: string;
-    receiverPhone: string;
-    country: string;
-    city: string;
-    street: string;
-    district?: string;
-    company?: string;
-    deliveryMethod: string;
-    pickupAddress: string;
-    payment: string;
-    shippingMethod: string;
-    terms: boolean;
-    estimatedFee?: string;
-    goodsList: Array<GoodsFormValues & { imageUrl: string }>;
-    state?: string;
-};
-
-interface GoodsFormValues {
-    domesticWb: string;
-    natureOfGoods: string;
-    itemName: string;
-    weight: string;
-    declaredValue: string;
-    count: string;
-    image: FileList;
-}
-
-const countryCityRates: Record<string, number> = {
-    'Éthiopie-Addis-Abeba': 22,
-    'Tanzanie-Dodoma': 22,
-    'Nigeria-Abuja': 22,
-    'Ghana-Accra': 22,
-    'Zambie-Lusaka': 22,
-    'Congo (RDC)-Kinshasa': 22,
-    'République du Congo-Brazzaville': 22,
-    'Cameroun-Yaoundé': 22,
-    'Djibouti-Djibouti': 22,
-    'Côte d\'Ivoire-Yamoussoukro': 22,
-    'Mali-Bamako': 22,
-    'Gabon-Libreville': 22,
-    'Rwanda-Kigali': 22,
-    'Guinée Équatoriale-Malabo': 22,
-    'Sénégal-Dakar': 22,
-    'Madagascar-Antananarivo': 22,
-    'Malawi-Lilongwe': 22,
-    'Guinée-Conakry': 22,
-    'Burkina Faso-Ouagadougou': 22,
-    'Bénin-Porto-Novo': 22,
-    'Afrique du Sud-Pretoria': 22,
-    'Niger-Niamey': 22,
-    'Botswana-Gaborone': 22,
-    'Tchad-N\'Djamena': 22,
-};
-
-const calculateEstimatedFee = (country: string, city: string, goodsList: GoodsFormValues[]): number => {
-    const rate = countryCityRates[`${country}-${city}`];
-    if (!rate) return 22;
-    const totalWeight = goodsList.reduce((sum, goods) => sum + parseFloat(goods.weight), 0);
-    return totalWeight * rate;
-};
+import { GoodsFormValues, FormValues } from '@/types/FormValues';
 
 const Page: React.FC = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
-    const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [goodsList, setGoodsList] = useState<Array<GoodsFormValues & { imageUrl: string }>>([]);
     const [estimatedFee, setEstimatedFee] = useState<string | undefined>(undefined);
+    const [phonePrefixes, setPhonePrefixes] = useState([]);
+    const [countriesCities, setCountriesCities] = useState<any>({});
     const router = useRouter();
 
     const watchedCountry = watch('country');
     const watchedCity = watch('city');
 
     useEffect(() => {
-        console.log('Country:', watchedCountry);
-        console.log('City:', watchedCity);
-        console.log('Goods List:', goodsList);
-        const fee = calculateEstimatedFee(watchedCountry, watchedCity, goodsList).toFixed(2);
-        console.log('Estimated Fee:', fee);
-        setEstimatedFee(fee);
-    }, [watchedCountry, watchedCity, goodsList]);
+        const fetchPhonePrefixes = async () => {
+            const response = await axios.get('/api/common/phone-prefixes');
+            setPhonePrefixes(response.data.phonePrefixes);
+        };
+        fetchPhonePrefixes();
+
+        const fetchCountriesCitiesRates = async () => {
+            const response = await axios.get('/api/common/countries-cities-rates');
+            setCountriesCities(response.data.data);
+        };
+        fetchCountriesCitiesRates();
+    }, []);
+
+    useEffect(() => {
+        if (watchedCountry && watchedCity) {
+            const selectedCity = countriesCities[watchedCountry]?.find((item: any) => item.city === watchedCity);
+            const ratePerKg = selectedCity?.ratePerKg || 0;
+            const totalWeight = goodsList.reduce((sum, goods) => sum + parseFloat(goods.weight), 0);
+            const fee = (totalWeight * ratePerKg).toFixed(2);
+            setEstimatedFee(fee);
+        }
+    }, [watchedCountry, watchedCity, goodsList, countriesCities]);
 
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
@@ -131,6 +79,10 @@ const Page: React.FC = () => {
         setGoodsList([...goodsList, { ...goods, imageUrl }]);
     };
 
+    function setIsGoodsModalOpen(arg0: boolean): void {
+        throw new Error('Function not implemented.');
+    }
+
     return (
         <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <h2 className="text-2xl font-bold mb-6">Order Information</h2>
@@ -156,12 +108,9 @@ const Page: React.FC = () => {
                                     className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhonePrefix && 'border-red-500'}`}
                                     {...register('senderPhonePrefix', { required: 'Phone prefix is required' })}
                                 >
-                                    <option value="+86">+86</option>
-                                    <option value="+1">+1</option>
-                                    <option value="+44">+44</option>
-                                    <option value="+49">+49</option>
-                                    <option value="+81">+81</option>
-                                    <option value="+82">+82</option>
+                                    {phonePrefixes.map((prefix: any, index: number) => (
+                                        <option key={index} value={prefix.code}>{prefix.country} ({prefix.code})</option>
+                                    ))}
                                 </select>
                                 <input
                                     type="text"
@@ -194,30 +143,9 @@ const Page: React.FC = () => {
                                 {...register('country', { required: 'Country is required' })}
                             >
                                 <option value="">Select Country</option>
-                                <option value="Éthiopie">Éthiopie</option>
-                                <option value="Tanzanie">Tanzanie</option>
-                                <option value="Nigeria">Nigeria</option>
-                                <option value="Ghana">Ghana</option>
-                                <option value="Zambie">Zambie</option>
-                                <option value="Congo (RDC)">Congo (RDC)</option>
-                                <option value="République du Congo">République du Congo</option>
-                                <option value="Cameroun">Cameroun</option>
-                                <option value="Djibouti">Djibouti</option>
-                                <option value="Côte d'Ivoire">Côte d&apos;Ivoire</option>
-                                <option value="Mali">Mali</option>
-                                <option value="Gabon">Gabon</option>
-                                <option value="Rwanda">Rwanda</option>
-                                <option value="Guinée Équatoriale">Guinée Équatoriale</option>
-                                <option value="Sénégal">Sénégal</option>
-                                <option value="Madagascar">Madagascar</option>
-                                <option value="Malawi">Malawi</option>
-                                <option value="Guinée">Guinée</option>
-                                <option value="Burkina Faso">Burkina Faso</option>
-                                <option value="Bénin">Bénin</option>
-                                <option value="Afrique du Sud">Afrique du Sud</option>
-                                <option value="Niger">Niger</option>
-                                <option value="Botswana">Botswana</option>
-                                <option value="Tchad">Tchad</option>
+                                {Object.keys(countriesCities).map((country: string, index: number) => (
+                                    <option key={index} value={country}>{country}</option>
+                                ))}
                             </select>
                             {getErrorMessage(errors.country)}
                         </div>
@@ -228,30 +156,9 @@ const Page: React.FC = () => {
                                 {...register('city', { required: 'City is required' })}
                             >
                                 <option value="">Select City</option>
-                                <option value="Addis-Abeba">Addis-Abeba</option>
-                                <option value="Dodoma">Dodoma</option>
-                                <option value="Abuja">Abuja</option>
-                                <option value="Accra">Accra</option>
-                                <option value="Lusaka">Lusaka</option>
-                                <option value="Kinshasa">Kinshasa</option>
-                                <option value="Brazzaville">Brazzaville</option>
-                                <option value="Yaoundé">Yaoundé</option>
-                                <option value="Djibouti">Djibouti</option>
-                                <option value="Yamoussoukro">Yamoussoukro</option>
-                                <option value="Bamako">Bamako</option>
-                                <option value="Libreville">Libreville</option>
-                                <option value="Kigali">Kigali</option>
-                                <option value="Malabo">Malabo</option>
-                                <option value="Dakar">Dakar</option>
-                                <option value="Antananarivo">Antananarivo</option>
-                                <option value="Lilongwe">Lilongwe</option>
-                                <option value="Conakry">Conakry</option>
-                                <option value="Ouagadougou">Ouagadougou</option>
-                                <option value="Porto-Novo">Porto-Novo</option>
-                                <option value="Pretoria">Pretoria</option>
-                                <option value="Niamey">Niamey</option>
-                                <option value="Gaborone">Gaborone</option>
-                                <option value="N'Djamena">N&apos;Djamena</option>
+                                {countriesCities[watchedCountry]?.map((cityObj: any, index: number) => (
+                                    <option key={index} value={cityObj.city}>{cityObj.city}</option>
+                                ))}
                             </select>
                             {getErrorMessage(errors.city)}
                         </div>
@@ -296,12 +203,9 @@ const Page: React.FC = () => {
                                     className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhonePrefix && 'border-red-500'}`}
                                     {...register('receiverPhonePrefix', { required: 'Phone prefix is required' })}
                                 >
-                                    <option value="+86">+86</option>
-                                    <option value="+1">+1</option>
-                                    <option value="+44">+44</option>
-                                    <option value="+49">+49</option>
-                                    <option value="+81">+81</option>
-                                    <option value="+82">+82</option>
+                                    {phonePrefixes.map((prefix: any, index: number) => (
+                                        <option key={index} value={prefix.code}>{prefix.country} ({prefix.code})</option>
+                                    ))}
                                 </select>
                                 <input
                                     type="text"
@@ -347,7 +251,6 @@ const Page: React.FC = () => {
                                         <td className="py-2 px-4 border">{goods.declaredValue}</td>
                                         <td className="py-2 px-4 border">{goods.count}</td>
                                         <td className="py-2 px-4 border">
-                                            {/* <img src={goods.imageUrl} alt={goods.itemName} className="h-16" /> */}
                                             <Image src={goods.imageUrl} width={50} height={50} alt={goods.itemName} />
                                         </td>
                                     </tr>
@@ -377,12 +280,12 @@ const Page: React.FC = () => {
                         </div>
                         <div>
                             <label className="block text-gray-700 text-sm font-bold mb-2">Pick-up Address <span className="text-red-500">*</span></label>
-                            <select
-                                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.pickupAddress && 'border-red-500'}`}
+                            <select className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.pickupAddress && 'border-red-500'}`}
                                 {...register('pickupAddress', { required: 'Pick-up address is required' })}
                             >
-                                <option value="">Select Pick-up Address</option>
-                                <option value="beijing">Beijing</option>
+                                {countriesCities[watchedCountry]?.map((cityObj: any, index: number) => (
+                                    <option key={index} value={cityObj.city}>{cityObj.city}</option>
+                                ))}
                             </select>
                             {getErrorMessage(errors.pickupAddress)}
                         </div>
@@ -444,14 +347,6 @@ const Page: React.FC = () => {
                     </button>
                 </div>
             </form>
-
-            {isGoodsModalOpen && (
-                <GoodsModal
-                    isOpen={isGoodsModalOpen}
-                    onRequestClose={() => setIsGoodsModalOpen(false)}
-                    onAddGoods={addGoods}
-                />
-            )}
         </div>
     );
 };

@@ -41,6 +41,40 @@ interface GoodsFormValues {
     image: FileList;
 }
 
+const countryCityRates: Record<string, number> = {
+    'Éthiopie-Addis-Abeba': 22,
+    'Tanzanie-Dodoma': 22,
+    'Nigeria-Abuja': 22,
+    'Ghana-Accra': 22,
+    'Zambie-Lusaka': 22,
+    'Congo (RDC)-Kinshasa': 22,
+    'République du Congo-Brazzaville': 22,
+    'Cameroun-Yaoundé': 22,
+    'Djibouti-Djibouti': 22,
+    'Côte d\'Ivoire-Yamoussoukro': 22,
+    'Mali-Bamako': 22,
+    'Gabon-Libreville': 22,
+    'Rwanda-Kigali': 22,
+    'Guinée Équatoriale-Malabo': 22,
+    'Sénégal-Dakar': 22,
+    'Madagascar-Antananarivo': 22,
+    'Malawi-Lilongwe': 22,
+    'Guinée-Conakry': 22,
+    'Burkina Faso-Ouagadougou': 22,
+    'Bénin-Porto-Novo': 22,
+    'Afrique du Sud-Pretoria': 22,
+    'Niger-Niamey': 22,
+    'Botswana-Gaborone': 22,
+    'Tchad-N\'Djamena': 22,
+};
+
+const calculateEstimatedFee = (country: string, city: string, goodsList: GoodsFormValues[]): number => {
+    const rate = countryCityRates[`${country}-${city}`];
+    if (!rate) return 22;
+    const totalWeight = goodsList.reduce((sum, goods) => sum + parseFloat(goods.weight), 0);
+    return totalWeight * rate;
+};
+
 const Page: React.FC = () => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
     const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
@@ -51,29 +85,15 @@ const Page: React.FC = () => {
 
     const watchedCountry = watch('country');
     const watchedCity = watch('city');
-    const watchedState = watch('state');
 
     useEffect(() => {
-        const fetchEstimatedFee = async () => {
-            if (watchedCountry && watchedCity && watchedState) {
-                try {
-                    const response = await axios.get(`/api/order/fare-cost`, {
-                        params: {
-                            country: watchedCountry,
-                            city: watchedCity,
-                            state: watchedState,
-                        },
-                    });
-                    setEstimatedFee(response.data.fareCost);
-                } catch (error) {
-                    console.error('Error fetching fare cost:', error);
-                    toast.error('Failed to fetch fare cost');
-                }
-            }
-        };
-
-        fetchEstimatedFee();
-    }, [watchedCountry, watchedCity, watchedState]);
+        console.log('Country:', watchedCountry);
+        console.log('City:', watchedCity);
+        console.log('Goods List:', goodsList);
+        const fee = calculateEstimatedFee(watchedCountry, watchedCity, goodsList).toFixed(2);
+        console.log('Estimated Fee:', fee);
+        setEstimatedFee(fee);
+    }, [watchedCountry, watchedCity, goodsList]);
 
     const onSubmit = async (data: FormValues) => {
         setLoading(true);
@@ -105,6 +125,10 @@ const Page: React.FC = () => {
             </p>;
         }
         return null;
+    };
+
+    const addGoods = (goods: GoodsFormValues, imageUrl: string) => {
+        setGoodsList([...goodsList, { ...goods, imageUrl }]);
     };
 
     return (
@@ -170,10 +194,30 @@ const Page: React.FC = () => {
                                 {...register('country', { required: 'Country is required' })}
                             >
                                 <option value="">Select Country</option>
-                                <option value="china">China</option>
-                                <option value="usa">USA</option>
-                                <option value="uk">UK</option>
-                                <option value="germany">Germany</option>
+                                <option value="Éthiopie">Éthiopie</option>
+                                <option value="Tanzanie">Tanzanie</option>
+                                <option value="Nigeria">Nigeria</option>
+                                <option value="Ghana">Ghana</option>
+                                <option value="Zambie">Zambie</option>
+                                <option value="Congo (RDC)">Congo (RDC)</option>
+                                <option value="République du Congo">République du Congo</option>
+                                <option value="Cameroun">Cameroun</option>
+                                <option value="Djibouti">Djibouti</option>
+                                <option value="Côte d'Ivoire">Côte d&apos;Ivoire</option>
+                                <option value="Mali">Mali</option>
+                                <option value="Gabon">Gabon</option>
+                                <option value="Rwanda">Rwanda</option>
+                                <option value="Guinée Équatoriale">Guinée Équatoriale</option>
+                                <option value="Sénégal">Sénégal</option>
+                                <option value="Madagascar">Madagascar</option>
+                                <option value="Malawi">Malawi</option>
+                                <option value="Guinée">Guinée</option>
+                                <option value="Burkina Faso">Burkina Faso</option>
+                                <option value="Bénin">Bénin</option>
+                                <option value="Afrique du Sud">Afrique du Sud</option>
+                                <option value="Niger">Niger</option>
+                                <option value="Botswana">Botswana</option>
+                                <option value="Tchad">Tchad</option>
                             </select>
                             {getErrorMessage(errors.country)}
                         </div>
@@ -184,10 +228,30 @@ const Page: React.FC = () => {
                                 {...register('city', { required: 'City is required' })}
                             >
                                 <option value="">Select City</option>
-                                <option value="beijing">Beijing</option>
-                                <option value="shanghai">Shanghai</option>
-                                <option value="new-york">New York</option>
-                                <option value="london">London</option>
+                                <option value="Addis-Abeba">Addis-Abeba</option>
+                                <option value="Dodoma">Dodoma</option>
+                                <option value="Abuja">Abuja</option>
+                                <option value="Accra">Accra</option>
+                                <option value="Lusaka">Lusaka</option>
+                                <option value="Kinshasa">Kinshasa</option>
+                                <option value="Brazzaville">Brazzaville</option>
+                                <option value="Yaoundé">Yaoundé</option>
+                                <option value="Djibouti">Djibouti</option>
+                                <option value="Yamoussoukro">Yamoussoukro</option>
+                                <option value="Bamako">Bamako</option>
+                                <option value="Libreville">Libreville</option>
+                                <option value="Kigali">Kigali</option>
+                                <option value="Malabo">Malabo</option>
+                                <option value="Dakar">Dakar</option>
+                                <option value="Antananarivo">Antananarivo</option>
+                                <option value="Lilongwe">Lilongwe</option>
+                                <option value="Conakry">Conakry</option>
+                                <option value="Ouagadougou">Ouagadougou</option>
+                                <option value="Porto-Novo">Porto-Novo</option>
+                                <option value="Pretoria">Pretoria</option>
+                                <option value="Niamey">Niamey</option>
+                                <option value="Gaborone">Gaborone</option>
+                                <option value="N'Djamena">N&apos;Djamena</option>
                             </select>
                             {getErrorMessage(errors.city)}
                         </div>
@@ -283,8 +347,8 @@ const Page: React.FC = () => {
                                         <td className="py-2 px-4 border">{goods.declaredValue}</td>
                                         <td className="py-2 px-4 border">{goods.count}</td>
                                         <td className="py-2 px-4 border">
-                                            {/* <img src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} className="h-16" /> */}
-                                            <Image src={`/uploads/${goods.imageUrl}`} alt={goods.itemName} width={50} height={50} />
+                                            {/* <img src={goods.imageUrl} alt={goods.itemName} className="h-16" /> */}
+                                            <Image src={goods.imageUrl} width={50} height={50} alt={goods.itemName} />
                                         </td>
                                     </tr>
                                 ))}
@@ -304,7 +368,6 @@ const Page: React.FC = () => {
                                 className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.deliveryMethod && 'border-red-500'}`}
                                 {...register('deliveryMethod', { required: 'Delivery method is required' })}
                             >
-                                <option value="">Select Delivery Method</option>
                                 <option value="door-to-door">Door to Door</option>
                                 <option value="door-to-port">Door to Port</option>
                                 <option value="port-to-port">Port to Port</option>
@@ -344,7 +407,7 @@ const Page: React.FC = () => {
                                 {...register('shippingMethod', { required: 'Shipping method is required' })}
                             >
                                 <option value="">Select Shipping Method</option>
-                                <option value="air">Air</option>
+                                <option value="air">Air Express</option>
                                 <option value="sea">Sea</option>
                                 <option value="land">Land</option>
                             </select>
@@ -382,8 +445,13 @@ const Page: React.FC = () => {
                 </div>
             </form>
 
-            {/* <GoodsModal isOpen={isGoodsModalOpen} onRequestClose={() => setIsGoodsModalOpen(false)}
-               onAddGoods={addGnoods} /> */}
+            {isGoodsModalOpen && (
+                <GoodsModal
+                    isOpen={isGoodsModalOpen}
+                    onRequestClose={() => setIsGoodsModalOpen(false)}
+                    onAddGoods={addGoods}
+                />
+            )}
         </div>
     );
 };
