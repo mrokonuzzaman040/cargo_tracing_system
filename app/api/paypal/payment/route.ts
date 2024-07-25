@@ -1,57 +1,61 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import axios from 'axios';
-import dbConnect from '@/lib/mongodb';
-import Order from '@/models/Order';
+import { NextResponse, NextRequest } from "next/server";
+import dotenv from "dotenv";
+import dbConnect from "@/lib/mongodb";
+import { jwtVerify } from "jose";
+import axios from "axios";
 
-const PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com'; // Use sandbox for testing, switch to live for production
-const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
-const PAYPAL_SECRET = process.env.PAYPAL_SECRET;
+dotenv.config();
 
-const getPayPalAccessToken = async () => {
-  const response = await axios({
-    url: `${PAYPAL_API_BASE}/v1/oauth2/token`,
-    method: 'post',
-    auth: {
-      username: PAYPAL_CLIENT_ID!,
-      password: PAYPAL_SECRET!,
-    },
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    data: 'grant_type=client_credentials',
-  });
+const SECRET_KEY = new TextEncoder().encode(
+  process.env.NEXTAUTH_SECRET || "your_secret"
+);
 
-  return response.data.access_token;
-};
+export async function POST(req: NextRequest) {
+  try {
+    const token = req.cookies.get("token")?.value;
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    try {
-      await dbConnect();
-
-      const { orderId } = req.body;
-      const accessToken = await getPayPalAccessToken();
-
-      const response = await axios({
-        url: `${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`,
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      const order = await Order.findById(orderId);
-      if (order) {
-        order.paymentStatus = 'Paid';
-        await order.save();
-      }
-
-      res.status(200).json({ message: 'Payment successful', data: response.data });
-    } catch (error) {
-      console.error('Error processing PayPal payment:', error);
-      res.status(500).json({ message: 'Internal Server Error', error });
+    if (!token) {
+      return NextResponse.json(
+        { message: "Authorization token is missing" },
+        { status: 401 }
+      );
     }
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
+
+    const { payload } = await jwtVerify(token, SECRET_KEY);
+
+    if (!payload || typeof payload !== "object" || !payload.email) {
+      return NextResponse.json(
+        { message: "Invalid token payload" },
+        { status: 401 }
+      );
+    }
+
+    const { orderId } = await req.json();
+
+    try {
+      const response = await axios.post(
+        `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderId}/capture`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.PAYPAL_ACCESS_TOKEN}`,
+          },
+        }
+      );
+
+      return NextResponse.json({ order: response.data }, { status: 200 });
+    } catch (error: any) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json(
+        { message: "An unknown error occurred" },
+        { status: 500 }
+      );
+    }
   }
 }
