@@ -3,11 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Image from 'next/image';
 import GoodsModal from './GoodsModal';
 import { useRouter } from 'next/navigation';
 import { GoodsFormValues, FormValues } from '@/types/FormValues';
+import Image from 'next/image';
 
 const Page: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
@@ -21,7 +20,6 @@ const Page: React.FC = () => {
 
   const watchedCountry = watch('country');
   const watchedCity = watch('city');
-  const watchedState = watch('state');
 
   useEffect(() => {
     const fetchPhonePrefixes = async () => {
@@ -264,7 +262,7 @@ const Page: React.FC = () => {
                     <td className="py-2 px-4 border">{goods.declaredValue}</td>
                     <td className="py-2 px-4 border">{goods.count}</td>
                     <td className="py-2 px-4 border">
-                      <Image src={goods.imageUrl} alt={goods.itemName} width={64} height={64} />
+                      <img src={goods.imageUrl} alt={goods.itemName} className="h-16" />
                     </td>
                   </tr>
                 ))}

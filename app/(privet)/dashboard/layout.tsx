@@ -289,8 +289,8 @@ export default function Layout({
                     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                         {children}
                     </div>
-                    <ToastContainer />
                 </div>
+                <ToastContainer />
             </body>
             <PrelineScript />
         </html>
