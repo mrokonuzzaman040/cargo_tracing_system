@@ -1,48 +1,63 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useForm, FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
-import axios from "axios";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import GoodsModal from "./GoodsModal";
-import { GoodsFormValues, FormValues } from "@/types/FormValues";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useForm, FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image';
+import GoodsModal from './GoodsModal';
+import { useRouter } from 'next/navigation';
+import { GoodsFormValues, FormValues } from '@/types/FormValues';
 
 const Page: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
+  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [goodsList, setGoodsList] = useState<Array<GoodsFormValues & { imageUrl: string }>>([]);
   const [estimatedFee, setEstimatedFee] = useState<string | undefined>(undefined);
   const [phonePrefixes, setPhonePrefixes] = useState([]);
   const [countriesCities, setCountriesCities] = useState<any>({});
-  const [isGoodsModalOpen, setIsGoodsModalOpen] = useState(false);
   const router = useRouter();
 
-  const watchedCountry = watch("country");
-  const watchedCity = watch("city");
+  const watchedCountry = watch('country');
+  const watchedCity = watch('city');
+  const watchedState = watch('state');
 
   useEffect(() => {
     const fetchPhonePrefixes = async () => {
-      const response = await axios.get("/api/common/phone-prefixes");
-      setPhonePrefixes(response.data.phonePrefixes);
+      try {
+        const response = await axios.get('/api/common/phone-prefixes');
+        setPhonePrefixes(response.data.phonePrefixes);
+      } catch (error) {
+        console.error('Error fetching phone prefixes:', error);
+      }
     };
-    fetchPhonePrefixes();
 
     const fetchCountriesCitiesRates = async () => {
-      const response = await axios.get("/api/common/countries-cities-rates");
-      setCountriesCities(response.data.data);
+      try {
+        const response = await axios.get('/api/common/countries-cities-rates');
+        setCountriesCities(response.data.data);
+      } catch (error) {
+        console.error('Error fetching countries and cities rates:', error);
+      }
     };
+
+    fetchPhonePrefixes();
     fetchCountriesCitiesRates();
   }, []);
 
   useEffect(() => {
-    if (watchedCountry && watchedCity) {
-      const selectedCity = countriesCities[watchedCountry]?.find((item: any) => item.city === watchedCity);
-      const ratePerKg = selectedCity?.ratePerKg || 0;
-      const totalWeight = goodsList.reduce((sum, goods) => sum + parseFloat(goods.weight), 0);
-      const fee = (totalWeight * ratePerKg).toFixed(2);
-      setEstimatedFee(fee);
-    }
+    const calculateEstimatedFee = () => {
+      if (watchedCountry && watchedCity) {
+        const selectedCity = countriesCities[watchedCountry]?.find((item: any) => item.city === watchedCity);
+        const ratePerKg = selectedCity?.ratePerKg || 0;
+        const totalWeight = goodsList.reduce((sum, goods) => sum + parseFloat(goods.weight), 0);
+        const fee = (totalWeight * ratePerKg).toFixed(2);
+        setEstimatedFee(fee);
+      }
+    };
+
+    calculateEstimatedFee();
   }, [watchedCountry, watchedCity, goodsList, countriesCities]);
 
   const onSubmit = async (data: FormValues) => {
@@ -50,23 +65,23 @@ const Page: React.FC = () => {
     data.goodsList = goodsList;
     data.estimatedFee = estimatedFee;
     try {
-      const response = await axios.post("/api/orders", data);
+      const response = await axios.post('/api/orders', data);
       if (response.status === 201) {
-        toast.success("Order submitted successfully");
+        toast.success('Order submitted successfully');
         setTimeout(() => {
-          router.push("/dashboard/order-history");
+          router.push('/dashboard/order-history');
         }, 1500);
       }
     } catch (error) {
-      console.error("Error saving order:", error);
-      toast.error("Failed to submit order");
+      console.error('Error saving order:', error);
+      toast.error('Failed to submit order');
     } finally {
       setLoading(false);
     }
   };
 
   const getErrorMessage = (
-    error: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
+    error: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined,
   ): React.ReactNode => {
     if (error) {
       return <p className="text-red-500 text-xs italic">
@@ -79,7 +94,6 @@ const Page: React.FC = () => {
 
   const addGoods = (goods: GoodsFormValues, imageUrl: string) => {
     setGoodsList([...goodsList, { ...goods, imageUrl }]);
-    setIsGoodsModalOpen(false);
   };
 
   return (
@@ -95,8 +109,8 @@ const Page: React.FC = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderName && "border-red-500"}`}
-                {...register("senderName", { required: "Name is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderName && 'border-red-500'}`}
+                {...register('senderName', { required: 'Name is required' })}
               />
               {getErrorMessage(errors.senderName)}
             </div>
@@ -104,8 +118,8 @@ const Page: React.FC = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Phone <span className="text-red-500">*</span></label>
               <div className="flex">
                 <select
-                  className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhonePrefix && "border-red-500"}`}
-                  {...register("senderPhonePrefix", { required: "Phone prefix is required" })}
+                  className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhonePrefix && 'border-red-500'}`}
+                  {...register('senderPhonePrefix', { required: 'Phone prefix is required' })}
                 >
                   {phonePrefixes.map((prefix: any, index: number) => (
                     <option key={index} value={prefix.code}>{prefix.country} ({prefix.code})</option>
@@ -113,8 +127,8 @@ const Page: React.FC = () => {
                 </select>
                 <input
                   type="text"
-                  className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhone && "border-red-500"}`}
-                  {...register("senderPhone", { required: "Phone is required" })}
+                  className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderPhone && 'border-red-500'}`}
+                  {...register('senderPhone', { required: 'Phone is required' })}
                 />
               </div>
               {getErrorMessage(errors.senderPhone)}
@@ -123,8 +137,8 @@ const Page: React.FC = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Address <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderAddress && "border-red-500"}`}
-                {...register("senderAddress", { required: "Address is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.senderAddress && 'border-red-500'}`}
+                {...register('senderAddress', { required: 'Address is required' })}
               />
               {getErrorMessage(errors.senderAddress)}
             </div>
@@ -138,8 +152,8 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Country <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.country && "border-red-500"}`}
-                {...register("country", { required: "Country is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.country && 'border-red-500'}`}
+                {...register('country', { required: 'Country is required' })}
               >
                 <option value="">Select Country</option>
                 {Object.keys(countriesCities).map((country: string, index: number) => (
@@ -151,8 +165,8 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">City <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.city && "border-red-500"}`}
-                {...register("city", { required: "City is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.city && 'border-red-500'}`}
+                {...register('city', { required: 'City is required' })}
               >
                 <option value="">Select City</option>
                 {countriesCities[watchedCountry]?.map((cityObj: any, index: number) => (
@@ -165,8 +179,8 @@ const Page: React.FC = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Street <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.street && "border-red-500"}`}
-                {...register("street", { required: "Street is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.street && 'border-red-500'}`}
+                {...register('street', { required: 'Street is required' })}
               />
               {getErrorMessage(errors.street)}
             </div>
@@ -175,7 +189,7 @@ const Page: React.FC = () => {
               <input
                 type="text"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                {...register("district")}
+                {...register('district')}
               />
             </div>
             <div>
@@ -183,15 +197,15 @@ const Page: React.FC = () => {
               <input
                 type="text"
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                {...register("company")}
+                {...register('company')}
               />
             </div>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverName && "border-red-500"}`}
-                {...register("receiverName", { required: "Receiver name is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverName && 'border-red-500'}`}
+                {...register('receiverName', { required: 'Receiver name is required' })}
               />
               {getErrorMessage(errors.receiverName)}
             </div>
@@ -199,8 +213,8 @@ const Page: React.FC = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2">Phone <span className="text-red-500">*</span></label>
               <div className="flex">
                 <select
-                  className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhonePrefix && "border-red-500"}`}
-                  {...register("receiverPhonePrefix", { required: "Phone prefix is required" })}
+                  className={`shadow appearance-none border rounded-l w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhonePrefix && 'border-red-500'}`}
+                  {...register('receiverPhonePrefix', { required: 'Phone prefix is required' })}
                 >
                   {phonePrefixes.map((prefix: any, index: number) => (
                     <option key={index} value={prefix.code}>{prefix.country} ({prefix.code})</option>
@@ -208,13 +222,13 @@ const Page: React.FC = () => {
                 </select>
                 <input
                   type="text"
-                  className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhone && "border-red-500"}`}
-                  {...register("receiverPhone", {
-                    required: "Phone is required",
+                  className={`shadow appearance-none border rounded-r w-3/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.receiverPhone && 'border-red-500'}`}
+                  {...register('receiverPhone', {
+                    required: 'Phone is required',
                     pattern: {
                       value: /^[0-9]{10}$/,
-                      message: "Invalid phone number",
-                    },
+                      message: 'Invalid phone number'
+                    }
                   })}
                 />
               </div>
@@ -250,7 +264,7 @@ const Page: React.FC = () => {
                     <td className="py-2 px-4 border">{goods.declaredValue}</td>
                     <td className="py-2 px-4 border">{goods.count}</td>
                     <td className="py-2 px-4 border">
-                      <Image src={goods.imageUrl} width={50} height={50} alt={goods.itemName} />
+                      <Image src={goods.imageUrl} alt={goods.itemName} width={64} height={64} />
                     </td>
                   </tr>
                 ))}
@@ -267,8 +281,8 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Delivery method <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.deliveryMethod && "border-red-500"}`}
-                {...register("deliveryMethod", { required: "Delivery method is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.deliveryMethod && 'border-red-500'}`}
+                {...register('deliveryMethod', { required: 'Delivery method is required' })}
               >
                 <option value="door-to-door">Door to Door</option>
                 <option value="door-to-port">Door to Port</option>
@@ -280,8 +294,8 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Pick-up Address <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.pickupAddress && "border-red-500"}`}
-                {...register("pickupAddress", { required: "Pick-up address is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.pickupAddress && 'border-red-500'}`}
+                {...register('pickupAddress', { required: 'Pick-up address is required' })}
               >
                 {countriesCities[watchedCountry]?.map((cityObj: any, index: number) => (
                   <option key={index} value={cityObj.city}>{cityObj.city}</option>
@@ -292,8 +306,8 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Payment <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.payment && "border-red-500"}`}
-                {...register("payment", { required: "Payment is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.payment && 'border-red-500'}`}
+                {...register('payment', { required: 'Payment is required' })}
               >
                 <option value="">Select Payment</option>
                 <option value="cash">Cash</option>
@@ -306,11 +320,11 @@ const Page: React.FC = () => {
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Shipping Method <span className="text-red-500">*</span></label>
               <select
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.shippingMethod && "border-red-500"}`}
-                {...register("shippingMethod", { required: "Shipping method is required" })}
+                className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.shippingMethod && 'border-red-500'}`}
+                {...register('shippingMethod', { required: 'Shipping method is required' })}
               >
                 <option value="">Select Shipping Method</option>
-                <option value="air">Air Express</option>
+                <option value="air">Air</option>
                 <option value="sea">Sea</option>
                 <option value="land">Land</option>
               </select>
@@ -324,8 +338,8 @@ const Page: React.FC = () => {
           <input
             type="checkbox"
             id="terms"
-            className={`mr-2 leading-tight ${errors.terms && "border-red-500"}`}
-            {...register("terms", { required: "You must agree to the terms" })}
+            className={`mr-2 leading-tight ${errors.terms && 'border-red-500'}`}
+            {...register('terms', { required: 'You must agree to the terms' })}
           />
           <label htmlFor="terms" className="text-gray-700 text-sm font-bold">I have read and agree to (Express Contract Terms)</label>
           {getErrorMessage(errors.terms)}
@@ -337,13 +351,13 @@ const Page: React.FC = () => {
             type="text"
             disabled
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            value={estimatedFee || ""}
+            value={estimatedFee || ''}
           />
         </div>
 
         <div className="text-right">
           <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-            {loading ? "Loading..." : "Submit Order"}
+            {loading ? 'Loading...' : 'Submit Order'}
           </button>
         </div>
       </form>
@@ -360,4 +374,3 @@ const Page: React.FC = () => {
 };
 
 export default Page;
-

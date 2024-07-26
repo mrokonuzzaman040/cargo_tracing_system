@@ -1,3 +1,5 @@
+// GoodsModal.tsx
+
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
@@ -136,4 +138,3 @@ const GoodsModal: React.FC<GoodsModalProps> = ({ isOpen, onRequestClose, onAddGo
 };
 
 export default GoodsModal;
-
