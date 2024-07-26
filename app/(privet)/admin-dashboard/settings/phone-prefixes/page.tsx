@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ConfirmationModal from '@/app/(components)/admin/ConfirmationModal';
 
 const AddPhonePrefix: React.FC = () => {
     const [country, setCountry] = useState('');
@@ -12,7 +13,9 @@ const AddPhonePrefix: React.FC = () => {
     const [editId, setEditId] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const itemsPerPage = 10;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [idToDelete, setIdToDelete] = useState('');
+    const itemsPerPage = 25;
 
     useEffect(() => {
         fetchPhonePrefixes(currentPage);
@@ -56,9 +59,14 @@ const AddPhonePrefix: React.FC = () => {
         setEditId(id);
     };
 
-    const handleDelete = async (id: string) => {
+    const confirmDelete = (id: string) => {
+        setIsModalOpen(true);
+        setIdToDelete(id);
+    };
+
+    const handleDelete = async () => {
         try {
-            const response = await axios.delete(`/api/admin/settings/phone-prefixes/${id}`);
+            const response = await axios.delete(`/api/admin/settings/phone-prefixes/${idToDelete}`);
             if (response.status === 200) {
                 toast.success('Phone prefix deleted successfully');
                 fetchPhonePrefixes(currentPage);
@@ -66,6 +74,9 @@ const AddPhonePrefix: React.FC = () => {
         } catch (error) {
             console.error('Error deleting phone prefix:', error);
             toast.error('Failed to delete phone prefix');
+        } finally {
+            setIsModalOpen(false);
+            setIdToDelete('');
         }
     };
 
@@ -123,7 +134,7 @@ const AddPhonePrefix: React.FC = () => {
                                 </button>
                                 <button
                                     className="bg-red-500 text-white py-1 px-3 rounded"
-                                    onClick={() => handleDelete(prefix._id)}
+                                    onClick={() => confirmDelete(prefix._id)}
                                 >
                                     Delete
                                 </button>
@@ -149,6 +160,13 @@ const AddPhonePrefix: React.FC = () => {
                     Next
                 </button>
             </div>
+
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                message="Are you sure you want to delete this phone prefix?"
+                onConfirm={handleDelete}
+                onCancel={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

@@ -1,24 +1,34 @@
 import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import ShippingRate from "@/models/ShippingRate";
-import { validateRole } from "@/lib/validator/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   await dbConnect();
 
-  const roleValidation = await validateRole(req, "admin");
-  if (roleValidation) {
-    return NextResponse.json(
-      { message: roleValidation.message },
-      { status: roleValidation.status }
-    );
-  }
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const limit = parseInt(searchParams.get("limit") || "25");
 
   try {
-    const shippingRates = await ShippingRate.find();
-    return NextResponse.json({ shippingRates }, { status: 200 });
+    const shippingRates = await ShippingRate.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await ShippingRate.countDocuments();
+
+    return NextResponse.json(
+      {
+        shippingRates,
+        pagination: {
+          total,
+          page,
+          pages: Math.ceil(total / limit),
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: "Error fetching shipping rates", error },
@@ -30,20 +40,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   await dbConnect();
 
-  const roleValidation = await validateRole(req, "admin");
-  if (roleValidation) {
+  const { country, city, ratePerKg } = await req.json();
+
+  if (!country || !city || !ratePerKg) {
     return NextResponse.json(
-      { message: roleValidation.message },
-      { status: roleValidation.status }
+      { message: "Country, city, and rate per Kg are required" },
+      { status: 400 }
     );
   }
 
-  const { country, city, ratePerKg } = await req.json();
-
   try {
-    const shippingRate = new ShippingRate({ country, city, ratePerKg });
-    await shippingRate.save();
-    return NextResponse.json({ shippingRate }, { status: 201 });
+    const newRate = new ShippingRate({ country, city, ratePerKg });
+    await newRate.save();
+    return NextResponse.json(newRate, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { message: "Error adding shipping rate", error },
