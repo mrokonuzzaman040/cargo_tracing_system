@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import GoodsModal from './GoodsModal';
 import { useRouter } from 'next/navigation';
 import { GoodsFormValues, FormValues } from '@/types/FormValues';
-import Image from 'next/image';
 
 const Page: React.FC = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<FormValues>();
@@ -97,6 +96,19 @@ const Page: React.FC = () => {
   return (
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
       <h2 className="text-2xl font-bold mb-6">Order Information</h2>
+
+      {/* Dropdown menue for warehouse */}
+      <div className="mb-6">
+        <label className="block text-gray-700 text-sm font-bold mb-2">Warehouse</label>
+        <select
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
+          <option value="">Select Warehouse</option>
+          <option value="warehouse1">Warehouse 1</option>
+          <option value="warehouse2">Warehouse 2</option>
+          <option value="warehouse3">Warehouse 3</option>
+        </select>
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Sender Information */}
@@ -322,7 +334,7 @@ const Page: React.FC = () => {
                 {...register('shippingMethod', { required: 'Shipping method is required' })}
               >
                 <option value="">Select Shipping Method</option>
-                <option value="air">Air</option>
+                <option value="air">Air Express</option>
                 <option value="sea">Sea</option>
                 <option value="land">Land</option>
               </select>
