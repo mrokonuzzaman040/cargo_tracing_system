@@ -3,25 +3,19 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { GoodsFormValues } from '@/types/FormValues';
 
-interface GoodsFormValues {
-    domesticWb: string;
-    natureOfGoods: string;
-    itemName: string;
-    weight: string;
-    declaredValue: string;
-    count: string;
-    image: FileList;
-}
-
-const GoodsModal: React.FC<{
+interface GoodsModalProps {
     isOpen: boolean;
     onRequestClose: () => void;
     onAddGoods: (goods: GoodsFormValues, imageUrl: string) => void;
-}> = ({ isOpen, onRequestClose, onAddGoods }) => {
+}
+
+const GoodsModal: React.FC<GoodsModalProps> = ({ isOpen, onRequestClose, onAddGoods }) => {
     const { register, handleSubmit, reset, formState: { errors } } = useForm<GoodsFormValues>();
     const [image, setImage] = useState<FileList | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState<boolean>(false);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -30,6 +24,7 @@ const GoodsModal: React.FC<{
     };
 
     const onSubmit: SubmitHandler<GoodsFormValues> = async (data) => {
+        setIsUploading(true);
         if (image && image.length > 0) {
             const formData = new FormData();
             formData.append('file', image[0]);
@@ -50,11 +45,14 @@ const GoodsModal: React.FC<{
             } catch (error) {
                 console.error('Error uploading image:', error);
                 toast.error('Failed to upload image');
+            } finally {
+                setIsUploading(false);
             }
         } else {
             onAddGoods(data, '');
             reset();
             onRequestClose();
+            setIsUploading(false);
         }
     };
 
@@ -97,37 +95,19 @@ const GoodsModal: React.FC<{
                         {errors.itemName && <p className="text-red-500 text-xs italic">{errors.itemName.message}</p>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Weight <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.weight && 'border-red-500'}`}
-                            {...register('weight', { required: 'Weight is required' })}
-                        />
-                        {errors.weight && <p className="text-red-500 text-xs italic">{errors.weight.message}</p>}
+                        <label className="block text-gray-700">Weight</label>
+                        <input className="border p-2 w-full" type="number" step="0.01" {...register('weight', { required: 'Weight is required' })} />
+                        {errors.weight && <span className="text-red-500">{errors.weight.message}</span>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Declared Value <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.declaredValue && 'border-red-500'}`}
-                            {...register('declaredValue', { required: 'Declared value is required' })}
-                        />
-                        {errors.declaredValue && <p className="text-red-500 text-xs italic">{errors.declaredValue.message}</p>}
+                        <label className="block text-gray-700">Declared Value</label>
+                        <input className="border p-2 w-full" type="number" step="0.01" {...register('declaredValue', { required: 'Declared value is required' })} />
+                        {errors.declaredValue && <span className="text-red-500">{errors.declaredValue.message}</span>}
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Count <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.count && 'border-red-500'}`}
-                            {...register('count', { required: 'Count is required' })}
-                        />
-                        {errors.count && <p className="text-red-500 text-xs italic">{errors.count.message}</p>}
+                        <label className="block text-gray-700">Count</label>
+                        <input className="border p-2 w-full" type="number" {...register('count', { required: 'Count is required' })} />
+                        {errors.count && <span className="text-red-500">{errors.count.message}</span>}
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Image</label>
@@ -145,8 +125,8 @@ const GoodsModal: React.FC<{
                         >
                             Cancel
                         </button>
-                        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
-                            Add
+                        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded" disabled={isUploading}>
+                            {isUploading ? 'Uploading...' : 'Add Goods'}
                         </button>
                     </div>
                 </form>
@@ -156,3 +136,4 @@ const GoodsModal: React.FC<{
 };
 
 export default GoodsModal;
+

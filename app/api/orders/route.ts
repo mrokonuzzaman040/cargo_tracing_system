@@ -176,8 +176,6 @@ export async function POST(req: NextRequest) {
       goodsList,
     } = await req.json();
 
-    console.log("Goods List:", goodsList); // Log the goodsList to check if it is received correctly
-
     const orderNumber = generateOrderNumber();
 
     const order = new Order({
