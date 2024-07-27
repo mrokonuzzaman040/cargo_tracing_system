@@ -24,12 +24,6 @@ const Dashboard = () => {
             try {
                 const token = Cookies.get('token');
 
-                // if (!token) {
-                //     setError('No token found');
-                //     setLoading(false);
-                //     return;
-                // }
-
                 const response = await fetch('/api/user/info', {
                     method: 'POST',
                     headers: {
@@ -70,11 +64,6 @@ const Dashboard = () => {
 
         try {
             const token = Cookies.get('token');
-            if (!token) {
-                setError('No token found');
-                setLoading(false);
-                return;
-            }
 
             const response = await fetch('/api/user/update', {
                 method: 'POST',
@@ -115,7 +104,7 @@ const Dashboard = () => {
             {userInfo ? (
                 <div className="bg-white p-4 rounded shadow-md">
                     <h2 className="text-xl font-semibold mb-2">User Info</h2>
-                    {['name', 'phone', 'address', 'memberNo', 'accountType', 'contactEmail'].map((field) => (
+                    {['name', 'phone', 'address', 'contactEmail'].map((field) => (
                         <div key={field} className="mb-2">
                             <label className="font-semibold capitalize">{field.replace(/([A-Z])/g, ' $1')}:</label>
                             <input

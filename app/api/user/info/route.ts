@@ -46,8 +46,6 @@ export async function POST(req: NextRequest) {
       name: user.contactName || "Not available",
       phone: user.phone || "Not available",
       address: user.address || "Not available",
-      memberNo: user.memberNo || "Not available",
-      accountType: user.accountType || "Personal account",
       contactEmail: user.email || "Not available",
     };
 

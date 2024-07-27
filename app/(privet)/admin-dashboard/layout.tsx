@@ -4,6 +4,15 @@ import PrelineScript from '@/app/(components)/PrelineScript';
 import { about, logo, question, rate } from '@/var';
 import Image from 'next/image';
 import Logout from '@/app/(components)/Logout';
+import { CiBank, CiCircleQuestion, CiUser } from "react-icons/ci";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { HiOutlineCurrencyPound } from "react-icons/hi";
+import { SiAboutdotme } from "react-icons/si";
+import { AiFillCaretRight } from "react-icons/ai";
+import { FaBriefcase, FaPhoneAlt } from "react-icons/fa";
+import { TiWorld } from "react-icons/ti";
+
+
 
 export const metadata = {
     title: 'Cargo Shipping Company',
@@ -151,16 +160,31 @@ export default function Layout({
                                     <ul className="pt-2 ps-2">
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/pending-orders">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
                                                 Pending Orders
                                             </a>
                                         </li>
                                         <li>
+                                            <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/pick-up">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
+                                                Pick Up Orders
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/on-the-way">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
+                                                On The Way Orders
+                                            </a>
+                                        </li>
+                                        <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/delivered-orders">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
                                                 Delivered Orders
                                             </a>
                                         </li>
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/refund-requests">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
                                                 Refund Request
                                             </a>
                                         </li>
@@ -170,7 +194,7 @@ export default function Layout({
 
                             <li className="hs-accordion" id="projects-accordion">
                                 <button type="button" className="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-blue-600 hs-accordion-active:hover:bg-transparent text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 dark:hs-accordion-active:text-white">
-                                    <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+                                    <CiUser className="flex-shrink-0 size-4" />
                                     User Management
 
                                     <svg className="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
@@ -182,11 +206,13 @@ export default function Layout({
                                     <ul className="pt-2 ps-2">
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/my-customers">
-                                                My Customer`&apos;`s
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
+                                                My Customer&apos;s
                                             </a>
                                         </li>
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/delivery-men">
+                                                <AiFillCaretRight className="flex-shrink-0 size-4" />
                                                 Delivery Personnel
                                             </a>
                                         </li>
@@ -195,7 +221,7 @@ export default function Layout({
                             </li>
                             <li className="hs-accordion" id="projects-accordion">
                                 <button type="button" className="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-blue-600 hs-accordion-active:hover:bg-transparent text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300 dark:hs-accordion-active:text-white">
-                                    <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+                                    <CiBank className="flex-shrink-0 size-4" />
                                     Business Info
 
                                     <svg className="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
@@ -207,6 +233,7 @@ export default function Layout({
                                     <ul className="pt-2 ps-2">
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/account">
+                                                <FaBriefcase className="flex-shrink-0 size-4" />
                                                 Account
                                             </a>
                                         </li>
@@ -214,6 +241,7 @@ export default function Layout({
                                     <ul className="pt-2 ps-2">
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/settings/shipping-rates">
+                                                <TiWorld className="flex-shrink-0 size-4" />
                                                 Country Info
                                             </a>
                                         </li>
@@ -221,6 +249,7 @@ export default function Layout({
                                     <ul className="pt-2 ps-2">
                                         <li>
                                             <a className="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/settings/phone-prefixes">
+                                                <FaPhoneAlt className="flex-shrink-0 size-4" />
                                                 Phone Info
                                             </a>
                                         </li>
@@ -274,28 +303,28 @@ export default function Layout({
                             </li> */}
 
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/track-order">
-                                <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /><path d="M8 18h.01" /><path d="M12 18h.01" /><path d="M16 18h.01" /></svg>
+                                <HiMagnifyingGlass className="flex-shrink-0 size-4" />
                                 Tracking
                             </a></li>
 
-                            <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/chat">
-                                <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /><path d="M8 18h.01" /><path d="M12 18h.01" /><path d="M16 18h.01" /></svg>
-                                Message
-                            </a></li>
+                            <li>
+                                <a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300" href="/admin-dashboard/chat">
+                                    <svg className="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /><path d="M8 18h.01" /><path d="M12 18h.01" /><path d="M16 18h.01" /></svg>
+                                    Message
+                                </a>
+                            </li>
 
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={rate} alt="Image Description" /> */}
-                                <Image src={rate} width={24} height={24} alt="Image Description" />
+                                <HiOutlineCurrencyPound className="flex-shrink-0 size-4" />
                                 Rates
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
-                                {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={question} alt="Image Description" /> */}
-                                <Image src={question} width={24} height={24} alt="Image Description" />
+                                <CiCircleQuestion className="flex-shrink-0 size-4" />
                                 How to order
                             </a></li>
                             <li><a className="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300" href="#">
                                 {/* <img className="flex-shrink-0 w-6 h-h6 text-white" src={about} alt="Image Description" /> */}
-                                <Image src={about} width={24} height={24} alt="Image Description" />
+                                <SiAboutdotme className="flex-shrink-0 size-4" />
                                 About us
                             </a></li>
                         </ul>
