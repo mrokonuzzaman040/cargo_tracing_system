@@ -23,6 +23,32 @@ const TrackOrder: React.FC = () => {
         }
     };
 
+    const renderStatus = () => {
+        const statuses = ['pending', 'pick-up', 'on-the-way', 'delivered'];
+        const statusIndex = statuses.indexOf(orderStatus || '');
+
+        return (
+            <div className="mt-4">
+                <h3 className="text-xl font-semibold">Order Status</h3>
+                <ul className="mt-2 uppercase">
+                    {statuses.map((status, index) => {
+                        let statusClass = 'text-gray-400';
+                        if (index < statusIndex) {
+                            statusClass = 'text-blue-500 font-bold';
+                        } else if (index === statusIndex) {
+                            statusClass = 'text-green-500 font-bold underline';
+                        }
+                        return (
+                            <li key={status} className={`py-2 ${statusClass}`}>
+                                {status.replace(/-/g, ' ')} {status === 'delivered' && index === statusIndex && <span>&#10003;</span>}
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        );
+    };
+
     return (
         <div className="max-w-md mx-auto my-8">
             <h2 className="text-2xl font-bold mb-6">Track Order</h2>
@@ -48,12 +74,7 @@ const TrackOrder: React.FC = () => {
 
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">{error}</p>}
-            {orderStatus && (
-                <div className="mt-4">
-                    <h3 className="text-xl font-semibold">Order Status</h3>
-                    <p>{orderStatus}</p>
-                </div>
-            )}
+            {orderStatus && renderStatus()}
         </div>
     );
 };

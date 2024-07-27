@@ -46,13 +46,32 @@ export async function GET(
 
     const { orderNumber } = params;
 
-    const order = await Order.findOne({ orderNumber, userId: user._id });
+    // Check if the user is an admin
+    if (user.role === "admin") {
+      // Admin can access any order
+      const order = await Order.findOne({ orderNumber });
 
-    if (!order) {
-      return NextResponse.json({ message: "Order not found" }, { status: 404 });
+      if (!order) {
+        return NextResponse.json(
+          { message: "Order not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ status: order.status }, { status: 200 });
+    } else {
+      // Regular user can only access their own orders
+      const order = await Order.findOne({ orderNumber, userId: user._id });
+
+      if (!order) {
+        return NextResponse.json(
+          { message: "Order not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json({ status: order.status }, { status: 200 });
     }
-
-    return NextResponse.json({ status: order.status }, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 500 });
