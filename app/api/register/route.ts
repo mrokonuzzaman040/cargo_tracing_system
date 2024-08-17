@@ -4,7 +4,6 @@ import dbConnect from "../../../lib/mongodb";
 import User from "../../../models/User";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import { text } from "stream/consumers";
 
 dotenv.config(); // Ensure environment variables are loaded
 

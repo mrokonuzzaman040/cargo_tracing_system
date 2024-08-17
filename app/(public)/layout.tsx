@@ -12,6 +12,13 @@ export const metadata = {
   description: 'Cargo Shipping Company is a shipping company that provides shipping services to customers around the world.',
 }
 
+// Site metadata when shared on social media
+export const socialMedia = {
+  title: metadata.title,
+  description: metadata.description,
+  image: '/favicon.svg',
+}
+
 export default function RootLayout({
   children,
 }: {
